@@ -36,13 +36,13 @@ jobs:
         if: ${{ github.event_name == 'pull_request' }}
         uses: docker/build-push-action@v2
         with:
-          file: .github/workflows/Dockerfile
+          file: .devcontainer/Dockerfile
           tags: nikolodion/cmake-tdd:pr
         
       - name: Build and push
         if: ${{ github.event_name == 'push' }}
         uses: docker/build-push-action@v2
         with:
-          file: .github/workflows/Dockerfile
+          file: .devcontainer/Dockerfile
           push: true
           tags: nikolodion/cmake-tdd:latest
