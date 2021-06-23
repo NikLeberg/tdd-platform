@@ -1,0 +1,15 @@
+{
+	"name": "cmake-tdd",
+	"build": {
+		"dockerfile": "Dockerfile"
+	},
+
+	"settings": {},
+
+	"extensions": [
+		"ms-vscode.cpptools",
+		"twxs.cmake",
+		"cschlosser.doxdocgen",
+		"spmeesseman.vscode-taskexplorer"
+	]
+}
