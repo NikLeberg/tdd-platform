@@ -2,6 +2,7 @@ name: Docker Container
 
 # The CI.yml action depends on a custom container with cmake, cmocka and so on.
 # It is build here whenever the Dockerfile changes.
+# Trigger!
 
 on:
   push:
