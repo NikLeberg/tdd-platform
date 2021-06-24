@@ -39,12 +39,6 @@
             "command": "make test"
         },
         {
-            "label": "check",
-            "detail": "Check source code with cppcheck.",
-            "type": "shell",
-            "command": "make check"
-        },
-        {
             "label": "doc",
             "detail": "Generate HTML documentation for source code.",
             "type": "shell",

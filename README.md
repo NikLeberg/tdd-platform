@@ -8,10 +8,11 @@ This is a template for **test driven development** [tdd](https://en.wikipedia.or
 Version in brackets is what was used at the time of writing. 
 - cmake (3.18.4)
 - gcc (10.3.0)
+- cppcheck (2.3)
 - cmocka (1.1.5-2)
 - doxygen (1.9.1)
 
-A [Dockerfile](.devcontainer/Dockerfile) is available for easy setup of the needed tools. If VSCode or another supported editor is used the additional [devcontainer.json](.devcontainer/devcontainer.json) can be used to setup the environment automatically.
+A [Dockerfile](.devcontainer/Dockerfile) is available for easy setup of the needed tools. Or even easier as prebuilt image on dockerhub [nikolodion/cmake-tdd](https://hub.docker.com/r/nikolodion/cmake-tdd). If VSCode or another supported editor is used one could also use the additional [devcontainer.json](.devcontainer/devcontainer.json) to setup the environment automatically.
 
 
 ## Usage
@@ -23,7 +24,6 @@ command | action | &nbsp;
 `cmake ..` | generate buildsystem | &nbsp;
 `make` | compile source code | executable can be found under [build/src/](build/src/)
 `make test` | run tests | &nbsp;
-`make check` | run static analysis with cppcheck | &nbsp;
 `make doc` |  generate documentation | to view open [build/doc/html/index.html](build/doc/html/index.html)
 `make clean` | remove compiled files | &nbsp;
 
