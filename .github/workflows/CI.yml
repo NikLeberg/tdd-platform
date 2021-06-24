@@ -37,9 +37,12 @@ jobs:
       # Generate documentation with doxygen.
       working-directory: ${{github.workspace}}/build
       run: make doc
-    
+
+    - name: Rsync
+      run: apt-get update && apt-get install -y rsync
     - name: Pages
       # Publish doxygen documentation
+      
       uses: JamesIves/github-pages-deploy-action@4.1.4
       with:
         branch: main
