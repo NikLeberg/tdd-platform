@@ -24,12 +24,23 @@ jobs:
       run: make
 
     - name: Test
-      working-directory: ${{github.workspace}}/build
       # Execute tests defined by the CMake configuration.
+      working-directory: ${{github.workspace}}/build
       run: make test
 
     - name: Check
-      working-directory: ${{github.workspace}}/build
       # Execute checks with CppCheck.
+      working-directory: ${{github.workspace}}/build
       run: make check
-      
+
+    - name: Doc
+      # Generate documentation with doxygen.
+      working-directory: ${{github.workspace}}/build
+      run: make doc
+    
+    - name: Pages
+      # Publish doxygen documentation
+      uses: JamesIves/github-pages-deploy-action@4.1.4
+      with:
+        branch: main
+        folder: ${{github.workspace}}/build/doc/html
