@@ -21,6 +21,15 @@
             }
         },
         {
+            "label": "clean-hard",
+            "detail": "Delete complete build folder.",
+            "type": "shell",
+            "command": "rm -rf build && mkdir build",
+            "presentation": {
+                "close": true
+            }
+        },
+        {
             "label": "generate",
             "detail": "Generate buildsystem with cmake.",
             "type": "shell",

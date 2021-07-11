@@ -7,7 +7,7 @@ set(CMAKE_SKIP_INSTALL_RULES TRUE)
 set(CMAKE_C_STANDARD 11)
 set(CMAKE_BUILD_TYPE Debug)
 
-if (CMAKE_C_COMPILER_ID STREQUAL "GCC")
+if (CMAKE_C_COMPILER_ID STREQUAL "GNU")
 	add_compile_options(-W -Wall -Wextra -pedantic -pedantic-errors -Werror)
 else()
 	message(FATAL_ERROR "For now, only GCC is supported.")
