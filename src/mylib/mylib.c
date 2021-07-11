@@ -4,15 +4,15 @@
  * @brief Example library that says "Hello"
  * @version 0.1
  * @date 2021-06-22
- * 
+ *
  * @copyright Copyright (c) 2021 Niklaus Leuenberger
- * 
+ *
  */
 
 
 /*
  * Includes
- * 
+ *
  */
 
 #include <string.h>
@@ -22,7 +22,7 @@
 
 /*
  * Type declarations
- * 
+ *
  */
 
 /* ... */
@@ -30,7 +30,7 @@
 
 /*
  * Variable declarations
- * 
+ *
  */
 
 /* ... */
@@ -38,7 +38,7 @@
 
 /*
  * Private function prototypes
- * 
+ *
  */
 
 /* ... */
@@ -46,18 +46,19 @@
 
 /*
  * Implementation of public functions
- * 
+ *
  */
 
-void mylib_sayHello(char* data) {
+void mylib_sayHello(char *data) {
     strcpy(data, "Hello");
+    char arr[10];
+    arr[10] = 9;
 }
 
 
 /*
  * Implementation of private functions
- * 
+ *
  */
 
 /* ... */
-
