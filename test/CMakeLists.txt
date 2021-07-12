@@ -1,9 +1,5 @@
 message(STATUS "Processing test directory...")
 
-# Enable builtin cppcheck support
-find_program(CPPCHECK_EXECUTABLE cppcheck)
-set(CMAKE_C_CPPCHECK ${CPPCHECK_EXECUTABLE})
-
 # Files with tests, library under test is assumed to be named identical.
 set(TEST_FILES
 	mylib.c
@@ -11,7 +7,6 @@ set(TEST_FILES
 
 # Enable ctest-system and create test targets
 enable_testing()
-set(PROJECT_TEST ${CMAKE_PROJECT_NAME}_test)
 
 find_package(cmocka REQUIRED)
 
@@ -27,10 +22,28 @@ endforeach()
 
 # Add target that runs all tests
 add_custom_target(
-    test
+    test_cmocka
     COMMAND ctest --verbose
     WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
     COMMENT "Running tests..."
     VERBATIM
 )
-add_dependencies(test ${TEST_NAMES})
+add_dependencies(test_cmocka ${TEST_NAMES})
+
+# Add target that checks all source code
+find_program(CPPCHECK_EXECUTABLE cppcheck REQUIRED)
+add_custom_target(
+	test_cppcheck
+	COMMAND ${CPPCHECK_EXECUTABLE} --project=./compile_commands.json
+		--enable=all --inconclusive --suppress=unusedFunction
+		--suppress=unmatchedSuppression --suppress=missingIncludeSystem
+		--addon=cert --addon=threadsafety
+		--error-exitcode=1
+    WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}/build
+	COMMENT "Running cppcheck..."
+	VERBATIM
+)
+
+# Provide one target that runs all tests
+add_custom_target(tests)
+add_dependencies(tests test_cppcheck test_cmocka)

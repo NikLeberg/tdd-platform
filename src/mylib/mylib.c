@@ -51,8 +51,6 @@
 
 void mylib_sayHello(char *data) {
     strcpy(data, "Hello");
-    char arr[10];
-    arr[10] = 9;
 }
 
 

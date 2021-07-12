@@ -45,7 +45,7 @@
             "label": "test",
             "detail": "Run all tests.",
             "type": "shell",
-            "command": "make test"
+            "command": "make tests"
         },
         {
             "label": "doc",

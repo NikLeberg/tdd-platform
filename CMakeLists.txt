@@ -13,7 +13,7 @@ else()
 	message(FATAL_ERROR "For now, only GCC is supported.")
 endif()
 
-add_subdirectory(test)
 add_subdirectory(lib)
 add_subdirectory(src)
+add_subdirectory(test)
 add_subdirectory(doc)
