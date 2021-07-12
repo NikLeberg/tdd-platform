@@ -32,7 +32,7 @@
  */
 int main() {
     char str[10];
-    mylib_sayHello("hello");
+    mylib_sayHello(str);
     printf("\n%s", str);
     return 0;
 }
