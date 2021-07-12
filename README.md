@@ -23,8 +23,10 @@ command | action | &nbsp;
 ---|---|---
 `cmake ..` | generate buildsystem | &nbsp;
 `make` | compile source code | executable can be found under [build/src/](build/src/)
-`make test` | run tests | &nbsp;
-`make doc` |  generate documentation | to view open [build/doc/html/index.html](build/doc/html/index.html)
+`make test_cmocka` | run cmocka tests | &nbsp;
+`make test_cppcheck` | check source code with cppcheck | &nbsp;
+`make tests` | run all tests  | cmocka & cppcheck
+`make doc` | generate documentation | to view open [build/doc/html/index.html](build/doc/html/index.html)
 `make clean` | remove compiled files | &nbsp;
 
 If VSCode is used these commands are also available as tasks in [tasks.json](.vscode/tasks.json).

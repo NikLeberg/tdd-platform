@@ -42,7 +42,7 @@
             "command": "make all"
         },
         {
-            "label": "test",
+            "label": "tests",
             "detail": "Run all tests.",
             "type": "shell",
             "command": "make tests"
