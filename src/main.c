@@ -34,6 +34,5 @@ int main() {
     char str[10];
     mylib_sayHello("hello");
     printf("\n%s", str);
-
     return 0;
 }
