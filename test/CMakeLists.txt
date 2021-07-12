@@ -15,9 +15,11 @@ foreach(TEST_FILE IN ITEMS ${TEST_FILES})
 	set(TEST_NAME test_${TEST_FILE_NO_EXT})
 	list(APPEND TEST_NAMES ${TEST_NAME})
 	add_executable(${TEST_NAME} ${TEST_FILE})
-	target_link_libraries(${TEST_NAME} PRIVATE ${TEST_FILE_NO_EXT})
-	target_link_libraries(${TEST_NAME} PRIVATE cmocka)
+	target_link_libraries(${TEST_NAME} PRIVATE ${TEST_FILE_NO_EXT} cmocka)
 	add_test(NAME ${TEST_NAME} COMMAND ${TEST_NAME})
+	# Enable USAN, LSAN and ASAN for all cmocka tests
+	target_compile_options(${TEST_NAME} PRIVATE -fsanitize=undefined,leak,address)
+	target_link_options(${TEST_NAME} PRIVATE -fsanitize=undefined,leak,address)
 endforeach()
 
 # Add target that runs all tests

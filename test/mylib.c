@@ -15,12 +15,7 @@
  *
  */
 
-#include <stdarg.h>
-#include <stddef.h>
-#include <setjmp.h>
-#include <stdint.h>
-#include <cmocka.h>
-
+#include "test.h"
 #include "mylib/mylib.h"
 
 
