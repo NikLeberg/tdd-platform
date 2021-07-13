@@ -2,15 +2,25 @@
     "configurations": [
         {
             "name": "Linux",
-            "includePath": [
-                "${workspaceFolder}/**"
-            ],
-            "defines": [],
             "compilerPath": "/usr/bin/gcc",
-            "cStandard": "gnu17",
-            "cppStandard": "c++17",
+            "cStandard": "c11",
             "intelliSenseMode": "linux-gcc-x64",
-            "compileCommands": "${workspaceFolder}/build/compile_commands.json"
+            "compileCommands": "${workspaceFolder}/build/linux/compile_commands.json",
+            "customConfigurationVariables": {
+                "platform": "linux",
+                "runCommand": "./src/esp32"
+            }
+        },
+        {
+            "name": "ESP32",
+            "compilerPath": "/root/.espressif/tools/xtensa-esp32s3-elf/esp-2021r1-8.4.0/xtensa-esp32s3-elf/bin/xtensa-esp32s3-elf-gcc",
+            "cStandard": "c11",
+            "intelliSenseMode": "linux-gcc-x64",
+            "compileCommands": "${workspaceFolder}/build/esp32/compile_commands.json",
+            "customConfigurationVariables": {
+                "platform": "esp32",
+                "runCommand": ""
+            }
         }
     ],
     "version": 4

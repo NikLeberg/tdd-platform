@@ -2,8 +2,23 @@
     // See https://go.microsoft.com/fwlink/?LinkId=733558
     // for the documentation about the tasks.json format
     "version": "2.0.0",
+    "inputs": [
+        {
+            // https://github.com/microsoft/vscode-cpptools/issues/6476
+            "id": "platform",
+            "type": "command",
+            "command": "cpptools.activeConfigCustomVariable",
+            "args": "platform"
+        },
+        {
+            "id": "runCommand",
+            "type": "command",
+            "command": "cpptools.activeConfigCustomVariable",
+            "args": "runCommand"
+        }
+    ],
     "options": {
-        "cwd": "${workspaceFolder}/build"
+        "cwd": "${workspaceFolder}/build/${input:platform}"
     },
     "problemMatcher": "$gcc",
     "presentation": {
@@ -12,6 +27,22 @@
     },
     "tasks": [
         {
+            "label": "setup-buildfolder",
+            "detail": "Setup build-subfolder for currently selected platform.",
+            "type": "shell",
+            "command": "mkdir -p build/${input:platform}",
+            "options": {
+                "cwd": "${workspaceFolder}"
+            }
+        },
+        {
+            "label": "generate",
+            "detail": "Generate buildsystem with cmake.",
+            "type": "shell",
+            "command": "cmake ./../.. -DPLATFORM=${input:platform}",
+            "dependsOn": "setup-buildfolder"
+        },
+        {
             "label": "clean",
             "detail": "Clean generated files from last build.",
             "type": "shell",
@@ -19,21 +50,6 @@
             "presentation": {
                 "close": true
             }
-        },
-        {
-            "label": "clean-hard",
-            "detail": "Delete complete build folder.",
-            "type": "shell",
-            "command": "rm -rf build && mkdir build",
-            "presentation": {
-                "close": true
-            }
-        },
-        {
-            "label": "generate",
-            "detail": "Generate buildsystem with cmake.",
-            "type": "shell",
-            "command": "cmake .."
         },
         {
             "label": "build",
@@ -52,6 +68,12 @@
             "detail": "Generate HTML documentation for source code.",
             "type": "shell",
             "command": "make doc"
+        },
+        {
+            "label": "run",
+            "detail": "Run application.",
+            "type": "shell",
+            "command": "${input:runCommand}"
         }
     ]
 }
