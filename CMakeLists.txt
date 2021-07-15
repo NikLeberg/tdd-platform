@@ -13,7 +13,7 @@ if (NOT CMAKE_C_COMPILER_ID STREQUAL "GNU")
 endif()
 
 # Initialise custom platform build system (if any).
-platform_init_hook()
+platform_project_init_hook()
 
 # Add interface library "main" to propagate dependencies and compiler settings.
 add_library(main INTERFACE)
@@ -29,4 +29,4 @@ add_subdirectory(src)
 add_subdirectory(doc)
 
 # Finalize custom platform build system (if any).
-platform_finish_hook()
+platform_project_finish_hook()

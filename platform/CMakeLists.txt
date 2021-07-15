@@ -18,16 +18,33 @@ endif()
 
 # Provide a hook function that gets run after project() but bevore any target
 # gets defined. Platforms can use this to inject their custom build logic.
-function(platform_init_hook)
-    if(COMMAND platform_init_hook_impl)
-        platform_init_hook_impl()
+function(platform_project_init_hook)
+    if(COMMAND platform_project_init_hook_impl)
+        platform_project_init_hook_impl()
     endif()
 endfunction()
 
 # Provide a hook function that gets run after all CMakeLists.txt were executed.
 # Platforms can use this to finalize their build logic.
-function(platform_finish_hook)
-    if(COMMAND platform_finish_hook_impl)
-        platform_finish_hook_impl()
+function(platform_project_finish_hook)
+    if(COMMAND platform_project_finish_hook_impl)
+        platform_project_finish_hook_impl()
+    endif()
+endfunction()
+
+# Provide a hook function that gets run bevore the main bulk of the 
+# src/CMakeLists.txt gets executed that would create the target 
+# ${CMAKE_PROJECT_NAME}.elf.
+function(platform_main_init_hook)
+    if(COMMAND platform_main_init_hook_impl)
+        platform_main_init_hook_impl()
+    endif()
+endfunction()
+
+# Provide a hook function that gets run after the ${CMAKE_PROJECT_NAME}.elf
+# target was created. Plratforms may attach dependencies & co. to this target.
+function(platform_main_finish_hook)
+    if(COMMAND platform_main_finish_hook_impl)
+        platform_main_finish_hook_impl()
     endif()
 endfunction()

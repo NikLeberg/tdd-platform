@@ -4,19 +4,34 @@
 # Set toolchain for Cmake.
 set(CMAKE_TOOLCHAIN_FILE $ENV{IDF_PATH}/tools/cmake/toolchain-esp32.cmake CACHE STRING "Toolchain file")
 
-# Implement hook that gets run after project() but bevore the first target is
-# created.
-function(platform_init_hook_impl)
+# Implement hook that gets run after project() was called.
+function(platform_project_init_hook_impl)
+    # Add platform implementation / abstraction as library.
+    add_library(platform_impl
+        ${CMAKE_CURRENT_FUNCTION_LIST_DIR}/platform.c
+    )
+    target_include_directories(platform_impl PUBLIC
+        ${CMAKE_CURRENT_FUNCTION_LIST_DIR}/..
+    )
+    target_link_libraries(platform INTERFACE platform_impl)
+endfunction()
+
+# Implement hook that gets run before ${CMAKE_PROJECT_NAME} is created.
+function(platform_main_init_hook_impl)
     # Include CMake file that provides ESP-IDF CMake build system APIs.
     include($ENV{IDF_PATH}/tools/cmake/idf.cmake)
     # Include ESP-IDF components in the build, may be thought as an equivalent
     # of add_subdirectory() but with some additional processing and magic for
     # ESP-IDF build specific build processes.
-    idf_build_process(esp32 SDKCONFIG ${CMAKE_BINARY_DIR}/sdkconfig)
+    idf_build_process(esp32
+        COMPONENTS esp32 freertos esptool_py
+        SDKCONFIG ${CMAKE_BINARY_DIR}/sdkconfig
+        BUILD_DIR ${CMAKE_BINARY_DIR}
+    )
 endfunction()
 
-# Implement hook that gets run after all CMakeLists.txt were executed.
-function(platform_finish_hook_impl)
+# Implement hook that gets run after ${CMAKE_PROJECT_NAME} was created.
+function(platform_main_finish_hook_impl)
     # Include CMake file that provides ESP-IDF CMake build system APIs.
     include($ENV{IDF_PATH}/tools/cmake/idf.cmake)
     # Link idf components to the platform interface library.
