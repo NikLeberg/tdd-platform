@@ -25,7 +25,7 @@ target_link_libraries(main INTERFACE platform)
 
 add_subdirectory(lib)
 add_subdirectory(src)
-# add_subdirectory(test)
+add_subdirectory(test)
 add_subdirectory(doc)
 
 # Finalize custom platform build system (if any).

@@ -8,8 +8,6 @@ set(TEST_FILES
 # Enable ctest-system and create test targets
 enable_testing()
 
-find_package(cmocka REQUIRED)
-
 foreach(TEST_FILE IN ITEMS ${TEST_FILES})
 	get_filename_component(TEST_FILE_NO_EXT ${TEST_FILE} NAME_WE)
 	set(TEST_NAME test_${TEST_FILE_NO_EXT})
@@ -20,6 +18,8 @@ foreach(TEST_FILE IN ITEMS ${TEST_FILES})
 	# Enable USAN, LSAN and ASAN for all cmocka tests
 	target_compile_options(${TEST_NAME} PRIVATE -fsanitize=undefined,leak,address)
 	target_link_options(${TEST_NAME} PRIVATE -fsanitize=undefined,leak,address)
+	# Dont build on "make all"
+	set_target_properties(${TEST_NAME} PROPERTIES EXCLUDE_FROM_ALL TRUE)
 endforeach()
 
 # Add target that runs all tests
@@ -36,12 +36,12 @@ add_dependencies(test_cmocka ${TEST_NAMES})
 find_program(CPPCHECK_EXECUTABLE cppcheck REQUIRED)
 add_custom_target(
 	test_cppcheck
-	COMMAND ${CPPCHECK_EXECUTABLE} --project=./${PLATFORM}/compile_commands.json
+	COMMAND ${CPPCHECK_EXECUTABLE} --project=compile_commands.json
 		--enable=all --inconclusive --suppress=unusedFunction
 		--suppress=unmatchedSuppression --suppress=missingIncludeSystem
 		--addon=cert --addon=threadsafety
 		--error-exitcode=1
-    WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}/build
+    WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}/build/${PLATFORM}
 	COMMENT "Running cppcheck..."
 	VERBATIM
 )
