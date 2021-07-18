@@ -5,6 +5,7 @@ ENV LC_ALL=C
 
 RUN apt-get -q -y update && apt-get -q -y install --no-install-recommends \
         git \
+        libc-dev \
         gcc \
         make \
         cmake \
