@@ -11,6 +11,12 @@
             "args": "platform"
         },
         {
+            "id": "bashEnvFile",
+            "type": "command",
+            "command": "cpptools.activeConfigCustomVariable",
+            "args": "bashEnvFile"
+        },
+        {
             "id": "runCommand",
             "type": "command",
             "command": "cpptools.activeConfigCustomVariable",
@@ -18,7 +24,10 @@
         }
     ],
     "options": {
-        "cwd": "${workspaceFolder}/build/${input:platform}"
+        "cwd": "${workspaceFolder}/build/${input:platform}",
+        "env": {
+            "BASH_ENV": "${input:bashEnvFile}"
+        }
     },
     "problemMatcher": "$gcc",
     "presentation": {
@@ -33,6 +42,9 @@
             "command": "mkdir -p build/${input:platform}",
             "options": {
                 "cwd": "${workspaceFolder}"
+            },
+            "presentation": {
+                "close": true
             }
         },
         {

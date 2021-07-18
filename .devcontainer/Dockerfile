@@ -3,31 +3,41 @@ FROM ubuntu:hirsute
 ENV DEBIAN_FRONTEND=noninteractive
 ENV LC_ALL=C
 
-RUN apt-get -q -y update && apt-get -q -y install \
+RUN apt-get -q -y update && apt-get -q -y install --no-install-recommends \
         git \
-        gcc-8 \
+        gcc \
+        make \
         cmake \
         doxygen \
         graphviz \
         cppcheck \
-        libcmocka-dev
+    && rm -rf /var/lib/apt/lists/*
 
-# Extensions for ESP32 support
-RUN apt-get -q -y update && apt-get -q -y install \
+# Install packages for ESP8266 & ESP32 support
+RUN apt-get -q -y update && apt-get -q -y install --no-install-recommends \
         libusb-1.0-0-dev \
         python3 \
         python3-pip \
+    && rm -rf /var/lib/apt/lists/* \
     && update-alternatives --install \
         /usr/bin/python python /usr/bin/python3.9 1 \
     && update-alternatives --set \
         python /usr/bin/python3.9
 
-ARG IDF_CLONE_URL=https://github.com/espressif/esp-idf.git
-ARG IDF_CLONE_BRANCH=release/v4.3
+# Install esp-idf for ESP32 support
+ARG ESP32_CLONE_URL=https://github.com/espressif/esp-idf.git
+ARG ESP32_CLONE_BRANCH=release/v4.3
 
-RUN mkdir ~/.espressif \
+RUN mkdir -p ~/.espressif \
     && cd ~/.espressif \
-    && git clone $IDF_CLONE_URL -b $IDF_CLONE_BRANCH \
+    && git clone $ESP32_CLONE_URL -b $ESP32_CLONE_BRANCH \
     && ./esp-idf/install.sh
 
-RUN echo "source ~/.espressif/esp-idf/export.sh" >> ~/.bashrc
+# Install sdk for ESP8266 support
+ARG ESP8266_CLONE_URL=https://github.com/espressif/ESP8266_RTOS_SDK.git
+ARG ESP8266_CLONE_BRANCH=release/v3.4
+
+RUN mkdir -p ~/.espressif \
+    && cd ~/.espressif \
+    && git clone $ESP8266_CLONE_URL -b $ESP8266_CLONE_BRANCH \
+    && ./ESP8266_RTOS_SDK/install.sh
