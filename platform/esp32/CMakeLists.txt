@@ -9,16 +9,20 @@ endif()
 # Set toolchain for Cmake.
 set(CMAKE_TOOLCHAIN_FILE $ENV{IDF_PATH}/tools/cmake/toolchain-esp32.cmake CACHE STRING "Toolchain file")
 
+# Don't build shared libs, no dynamic load & link possible.
+set(BUILD_SHARED_LIBS OFF CACHE BOOL "don't build shared libs")
+
+# Set platform options
+set(PLATFORM_SUPPORTS_TEST_TARGET OFF CACHE BOOL "" FORCE)
+
 # Implement hook that gets run after project() was called.
 function(platform_project_init_hook_impl)
     # Add platform implementation / abstraction as library.
     add_library(platform_impl
         ${CMAKE_CURRENT_FUNCTION_LIST_DIR}/platform.c
     )
-    target_include_directories(platform_impl PUBLIC
-        ${CMAKE_CURRENT_FUNCTION_LIST_DIR}/..
-    )
     target_link_libraries(platform INTERFACE platform_impl)
+    target_link_libraries(platform_impl PUBLIC platform)
 endfunction()
 
 # Implement hook that gets run before ${CMAKE_PROJECT_NAME} is created.
@@ -30,19 +34,19 @@ function(platform_main_init_hook_impl)
     # ESP-IDF build specific build processes.
     idf_build_process(esp32
         COMPONENTS esp32 freertos esptool_py
+        SDKCONFIG_DEFAULTS ${CMAKE_CURRENT_FUNCTION_LIST_DIR}/sdkconfig.defaults
         SDKCONFIG ${CMAKE_BINARY_DIR}/sdkconfig
         BUILD_DIR ${CMAKE_BINARY_DIR}
     )
 endfunction()
 
-# Implement hook that gets run after ${CMAKE_PROJECT_NAME} was created.
-function(platform_main_finish_hook_impl)
+# Implement hook that gets run after the executable target was created.
+function(platform_main_finish_hook_impl executable_target)
     # Include CMake file that provides ESP-IDF CMake build system APIs.
     include($ENV{IDF_PATH}/tools/cmake/idf.cmake)
     # Link idf components to the platform interface library.
     target_link_libraries(platform INTERFACE idf::esp32 idf::freertos idf::spi_flash)
     # Let the build system know what the project executable is to attach more
     # targets, dependencies, etc.
-    # This assumes that the final project executable name is the project name.
-    idf_build_executable(${CMAKE_PROJECT_NAME})
+    idf_build_executable(${executable_target})
 endfunction()
