@@ -33,6 +33,8 @@ jobs:
       run: mkdir -p build/${{ matrix.platform }}
 
     - name: Setup tmate session
+      with:
+        sudo: false
       uses: mxschmitt/action-tmate@v3
 
     - name: 🛠 Generate
