@@ -20,6 +20,10 @@ jobs:
             runCommand: ""
     env:
       BASH_ENV: ${{ matrix.bashEnvFile }}
+      # Fix: esp-idf-tool-detection defaults to ~/.espressif but ~ in github
+      # runners points to '/github/home' instead of '/root'.
+      # https://docs.espressif.com/projects/esp-idf/en/latest/esp32/api-guides/tools/idf-tools.html#tools-installation-directory
+      IDF_TOOLS_PATH: /root/.espressif
     defaults:
       run:
         shell: bash
@@ -31,11 +35,6 @@ jobs:
 
     - name: 📁 Setup build folder
       run: mkdir -p build/${{ matrix.platform }}
-
-    - name: Setup tmate session
-      with:
-        sudo: false
-      uses: mxschmitt/action-tmate@v3
 
     - name: 🛠 Generate
       working-directory: build/${{ matrix.platform }}
