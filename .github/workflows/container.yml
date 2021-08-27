@@ -37,7 +37,7 @@ jobs:
         uses: docker/build-push-action@v2
         with:
           file: .devcontainer/Dockerfile
-          tags: nikolodion/cmake-tdd:pr
+          tags: nikolodion/tdd-platform:pr
         
       - name: Build and push
         if: ${{ github.event_name == 'push' }}
@@ -45,4 +45,4 @@ jobs:
         with:
           file: .devcontainer/Dockerfile
           push: true
-          tags: nikolodion/cmake-tdd:latest
+          tags: nikolodion/tdd-platform:latest
