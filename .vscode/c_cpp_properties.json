@@ -9,7 +9,7 @@
             "customConfigurationVariables": {
                 "platform": "linux",
                 "bashEnvFile": "",
-                "runCommand": "./src/esp32"
+                "runCommand": "./src/tdd-platform"
             }
         },
         {
