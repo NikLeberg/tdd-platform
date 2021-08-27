@@ -8,7 +8,7 @@
  * @copyright Copyright (c) 2021 Niklaus Leuenberger
  *
  * The platform implementation may provide following POSIX-apis:
- * - Standard Functions:
+ * - C-Standard:
  *      - <stdlib.h>
  *      - <stdbool.h>
  *      - <stddef.h>
@@ -25,10 +25,10 @@
  *      - <netinet/in.h>
  *      - <netinet/tcp.h>
  *
- * Additionally GPIO and peripheral apis according to the definitions in this
+ * Additionally GPIO and peripheral APIs according to the definitions in this
  * header may be provided.
  *
- * If a platform can't provide such functionality, the api has to be stubbed out
+ * If a platform can't provide such functionality, the API has to be stubbed out
  * and must return sensible errors or trigger an assert.
  */
 
