@@ -40,6 +40,6 @@ jobs:
       run: make all
 
     - name: ▶ Run
-      if: ${{ matrix.runCommand <> '' }}
+      if: ${{ matrix.runCommand != '' }}
       working-directory: build/${{ matrix.platform }}
       run: ${{ matrix.runCommand }}
