@@ -2,41 +2,44 @@ name: CI
 
 on: [push, pull_request]
 
+strategy:
+  matrix:
+    include:
+      - platform: linux
+        bashEnvFile: ""
+        runCommand: ./src/tdd-platform
+      - platform: esp32
+        bashEnvFile: /root/.espressif/esp-idf/export.sh
+        runCommand: ""
+      - platform: esp8266
+        bashEnvFile: /root/.espressif/ESP8266_RTOS_SDK/export.sh
+        runCommand: ""
+
 jobs:
   build:
     runs-on: ubuntu-latest
-    container: nikolodion/cmake-tdd:latest
+    container: nikolodion/tdd-platform:latest
+    env:
+      BASH_ENV: ${{ matrix.bashEnvFile }}
+    defaults:
+      run:
+        shell: bash
 
     steps:
     - uses: actions/checkout@v2
 
-    - name: Configure
-      # Configure CMake in a 'build' subdirectory.
-      run: mkdir build && cd build && cmake .. 
+    - name: 📁 Setup build folder
+      run: mkdir -p build/${{ matrix.platform }}
 
-    - name: Build
-      # Build your program with the given configuration
-      working-directory: ${{github.workspace}}/build
-      run: make
+    - name: 🛠 Generate
+      working-directory: build/${{ matrix.platform }}
+      run: cmake ./../.. -DPLATFORM=${{ matrix.platform }}
 
-    - name: Tests
-      # Execute tests defined by the CMake configuration.
-      working-directory: ${{github.workspace}}/build
-      run: make tests
+    - name: ⚙ Build
+      working-directory: build/${{ matrix.platform }}
+      run: make all
 
-    - name: Doc
-      # Generate documentation with doxygen.
-      working-directory: ${{github.workspace}}/build
-      run: make doc
-
-    - name: Rsync
-      if: ${{ github.ref == 'refs/heads/main' }} && ${{ github.event_name == 'push' }}
-      run: apt-get update && apt-get install -y rsync
-
-    - name: Pages
-      # Publish doxygen documentation (only on main)
-      if: ${{ github.ref == 'refs/heads/main' }} && ${{ github.event_name == 'push' }}
-      uses: JamesIves/github-pages-deploy-action@4.1.4
-      with:
-        branch: pages
-        folder: ${{github.workspace}}/build/doc/html
+    - name: ▶ Run
+      if: ${{ matrix.runCommand <> '' }}
+      working-directory: build/${{ matrix.platform }}
+      run: ${{ matrix.runCommand }}
