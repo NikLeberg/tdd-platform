@@ -1,11 +1,11 @@
 {
-    "name": "cmake-tdd+esp32",
+    "name": "tdd-platform",
     "build": {
         "dockerfile": "Dockerfile"
     },
     "runArgs": [
         "--hostname",
-        "cmake-tdd",
+        "tdd-platform",
     ],
     "settings": {
         "editor.formatOnSave": true,
