@@ -25,7 +25,7 @@ function(platform_project_init_hook_impl)
     target_link_libraries(platform_impl PUBLIC platform)
 endfunction()
 
-# Implement hook that gets run before ${CMAKE_PROJECT_NAME} is created.
+# Implement hook that gets run before the executable target is created.
 function(platform_main_init_hook_impl)
     # Include CMake file that provides ESP-IDF CMake build system APIs.
     include($ENV{IDF_PATH}/tools/cmake/idf.cmake)
