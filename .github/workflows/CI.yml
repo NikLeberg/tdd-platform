@@ -2,23 +2,22 @@ name: CI
 
 on: [push, pull_request]
 
-strategy:
-  matrix:
-    include:
-      - platform: linux
-        bashEnvFile: ""
-        runCommand: ./src/tdd-platform
-      - platform: esp32
-        bashEnvFile: /root/.espressif/esp-idf/export.sh
-        runCommand: ""
-      - platform: esp8266
-        bashEnvFile: /root/.espressif/ESP8266_RTOS_SDK/export.sh
-        runCommand: ""
-
 jobs:
   build:
     runs-on: ubuntu-latest
     container: nikolodion/tdd-platform:latest
+    strategy:
+      matrix:
+        include:
+          - platform: linux
+            bashEnvFile: ""
+            runCommand: ./src/tdd-platform
+          - platform: esp32
+            bashEnvFile: /root/.espressif/esp-idf/export.sh
+            runCommand: ""
+          - platform: esp8266
+            bashEnvFile: /root/.espressif/ESP8266_RTOS_SDK/export.sh
+            runCommand: ""
     env:
       BASH_ENV: ${{ matrix.bashEnvFile }}
     defaults:
