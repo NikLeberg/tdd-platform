@@ -12,12 +12,15 @@ jobs:
           - platform: linux
             bashEnvFile: ""
             runCommand: ./src/tdd-platform
+            cache: ""
           - platform: esp32
             bashEnvFile: /root/.espressif/esp-idf/export.sh
             runCommand: ""
+            cache: "/root/.espressif/esp-idf/components"
           - platform: esp8266
             bashEnvFile: /root/.espressif/ESP8266_RTOS_SDK/export.sh
             runCommand: ""
+            cache: "/root/.espressif/ESP8266_RTOS_SDK/components"
     env:
       BASH_ENV: ${{ matrix.bashEnvFile }}
       # Fix: esp-idf-tool-detection defaults to ~/.espressif but ~ in github
@@ -33,6 +36,14 @@ jobs:
       with:
         submodules: recursive
 
+    - name: 💾 Cache
+      uses: actions/cache@v2
+      with:
+        path: |
+          ~/.cache/ccache
+          ${{ matrix.cache }}
+        key: ${{ matrix.platform }}-cache
+
     - name: 📁 Setup build folder
       run: mkdir -p build/${{ matrix.platform }}
 
@@ -40,20 +51,9 @@ jobs:
       working-directory: build/${{ matrix.platform }}
       run: cmake ./../.. -DPLATFORM=${{ matrix.platform }}
 
-    - name: 💾 Cache Build
-      uses: actions/cache@v2
-      with:
-        path: ~/.cache/ccache
-        key: ${{ matrix.platform }}-ccache
-
     - name: ⚙ Build
       working-directory: build/${{ matrix.platform }}
       run: make all
-
-    - name: Setup tmate session
-      uses: mxschmitt/action-tmate@v3
-      with:
-        sudo: false
 
     - name: ▶ Run
       if: ${{ matrix.runCommand != '' }}
