@@ -9,6 +9,7 @@ RUN apt-get -q -y update && apt-get -q -y install --no-install-recommends \
         gcc=4:10.3* \
         make=4.3* \
         cmake=3.18* \
+        ccache=4.2* \
         doxygen=1.9* \
         graphviz=2.42* \
         cppcheck=2.3* \
