@@ -4,22 +4,22 @@ ENV DEBIAN_FRONTEND=noninteractive
 ENV LC_ALL=C
 
 RUN apt-get -q -y update && apt-get -q -y install --no-install-recommends \
-        git \
-        libc-dev \
-        gcc \
-        make \
-        cmake \
-        doxygen \
-        graphviz \
-        cppcheck \
+        git=1:2.30* \
+        libc6-dev=2.33* \
+        gcc=4:10.3* \
+        make=4.3* \
+        cmake=3.18* \
+        doxygen=1.9* \
+        graphviz=2.42* \
+        cppcheck=2.3* \
     && rm -rf /var/lib/apt/lists/*
 
 # Install packages for ESP8266 & ESP32 support
 RUN apt-get -q -y update && apt-get -q -y install --no-install-recommends \
-        libusb-1.0-0-dev \
-        jq \
-        python3 \
-        python3-pip \
+        libusb-1.0-0-dev=2:1.0* \
+        jq=1.6* \
+        python3=3.9* \
+        python3-pip=20.3* \
     && rm -rf /var/lib/apt/lists/* \
     && update-alternatives --install \
         /usr/bin/python python /usr/bin/python3.9 1 \
