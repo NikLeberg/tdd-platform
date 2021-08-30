@@ -11,18 +11,16 @@ jobs:
         include:
           - platform: linux
             bashEnvFile: ""
-            runCommand: ./src/tdd-platform
+            runCommand: make monitor
             cache: ""
           - platform: esp32
-            bashEnvFile: /root/.espressif/esp-idf/export.sh
             runCommand: ""
             cache: "/root/.espressif/esp-idf/components"
           - platform: esp8266
-            bashEnvFile: /root/.espressif/ESP8266_RTOS_SDK/export.sh
             runCommand: ""
             cache: "/root/.espressif/ESP8266_RTOS_SDK/components"
     env:
-      BASH_ENV: ${{ matrix.bashEnvFile }}
+      BASH_ENV: ${{github.workspace}}/platform/${{matrix.platform}}/environment.sh
       # Fix: esp-idf-tool-detection defaults to ~/.espressif but ~ in github
       # runners points to '/github/home' instead of '/root'.
       # https://docs.espressif.com/projects/esp-idf/en/latest/esp32/api-guides/tools/idf-tools.html#tools-installation-directory
@@ -41,21 +39,21 @@ jobs:
       with:
         path: |
           ~/.cache/ccache
-          ${{ matrix.cache }}
-        key: ${{ matrix.platform }}-cache
+          ${{matrix.cache}}
+        key: ${{matrix.platform}}-cache
 
     - name: 📁 Setup build folder
-      run: mkdir -p build/${{ matrix.platform }}
+      run: mkdir -p build/${{matrix.platform}}
 
     - name: 🛠 Generate
-      working-directory: build/${{ matrix.platform }}
-      run: cmake ./../.. -DPLATFORM=${{ matrix.platform }}
+      working-directory: build/${{matrix.platform}}
+      run: cmake ./../.. -DPLATFORM=${{matrix.platform}}
 
     - name: ⚙ Build
-      working-directory: build/${{ matrix.platform }}
+      working-directory: build/${{matrix.platform}}
       run: make all
 
     - name: ▶ Run
-      if: ${{ matrix.runCommand != '' }}
-      working-directory: build/${{ matrix.platform }}
-      run: ${{ matrix.runCommand }}
+      if: ${{matrix.runCommand != ''}}
+      working-directory: build/${{matrix.platform}}
+      run: ${{matrix.runCommand}}
