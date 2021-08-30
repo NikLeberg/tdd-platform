@@ -7,6 +7,9 @@
         "--hostname",
         "tdd-platform",
     ],
+    // Command to run on host at start of container. As host is WSL use *.exe to
+    // run command in Windows. https://docs.microsoft.com/en-us/windows/wsl/interop
+    "initializeCommand": "powershell.exe -File .devcontainer/hostSetup.ps1",
     "settings": {
         "editor.formatOnSave": true,
         "editor.formatOnPaste": true,
