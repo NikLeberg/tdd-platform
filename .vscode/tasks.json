@@ -9,24 +9,12 @@
             "type": "command",
             "command": "cpptools.activeConfigCustomVariable",
             "args": "platform"
-        },
-        {
-            "id": "bashEnvFile",
-            "type": "command",
-            "command": "cpptools.activeConfigCustomVariable",
-            "args": "bashEnvFile"
-        },
-        {
-            "id": "runCommand",
-            "type": "command",
-            "command": "cpptools.activeConfigCustomVariable",
-            "args": "runCommand"
         }
     ],
     "options": {
         "cwd": "${workspaceFolder}/build/${input:platform}",
         "env": {
-            "BASH_ENV": "${input:bashEnvFile}"
+            "BASH_ENV": "${workspaceFolder}/platform/${input:platform}/environment.sh"
         }
     },
     "problemMatcher": "$gcc",
@@ -82,10 +70,16 @@
             "command": "make doc"
         },
         {
-            "label": "run",
-            "detail": "Run application.",
+            "label": "flash",
+            "detail": "Run application or flash application to chip and monitor it.",
             "type": "shell",
-            "command": "${input:runCommand}"
+            "command": "make flash && make monitor",
+        },
+        {
+            "label": "monitor",
+            "detail": "Run application or monitor it on chip.",
+            "type": "shell",
+            "command": "make monitor",
         }
     ]
 }

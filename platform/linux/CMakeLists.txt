@@ -13,3 +13,18 @@ target_link_libraries(platform INTERFACE
     m
     pthread
 )
+
+# Implement hook that gets run after the executable target was created.
+function(platform_main_finish_hook_impl executable_target)
+    # Create fake "flash" target. Do nothing.
+    add_custom_target(
+        flash
+        COMMAND echo
+    )
+    # Create "monitor" target. It runs the compiled application.
+    add_custom_target(
+        monitor
+        COMMAND ${executable_target}
+        COMMENT "Executing application..."
+    )
+endfunction()

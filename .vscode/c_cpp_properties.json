@@ -7,9 +7,7 @@
             "intelliSenseMode": "linux-gcc-x64",
             "compileCommands": "${workspaceFolder}/build/linux/compile_commands.json",
             "customConfigurationVariables": {
-                "platform": "linux",
-                "bashEnvFile": "",
-                "runCommand": "./src/tdd-platform"
+                "platform": "linux"
             }
         },
         {
@@ -19,9 +17,7 @@
             "intelliSenseMode": "linux-gcc-x86",
             "compileCommands": "${workspaceFolder}/build/esp32/compile_commands.json",
             "customConfigurationVariables": {
-                "platform": "esp32",
-                "bashEnvFile": "/root/.espressif/esp-idf/export.sh",
-                "runCommand": "" // ToDo: Command to flash device
+                "platform": "esp32"
             }
         },
         {
@@ -31,9 +27,7 @@
             "intelliSenseMode": "linux-gcc-x86",
             "compileCommands": "${workspaceFolder}/build/esp8266/compile_commands.json",
             "customConfigurationVariables": {
-                "platform": "esp8266",
-                "bashEnvFile": "/root/.espressif/ESP8266_RTOS_SDK/export.sh",
-                "runCommand": "" // ToDo: Command to flash device
+                "platform": "esp8266"
             }
         }
     ],
