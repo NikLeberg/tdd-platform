@@ -1,0 +1,21 @@
+#!/usr/bin/env bash
+echo "Linux!"
+
+# ToDo, add symlink to available port
+# ln -s /dev/sr0 /dev/scd0
+
+# https://unix.stackexchange.com/questions/144029/command-to-determine-ports-of-a-device-like-dev-ttyusb0
+for sysdevpath in $(find /sys/bus/usb/devices/usb*/ -name dev); do
+    (
+        syspath="${sysdevpath%/dev}"
+        devname="$(udevadm info -q name -p $syspath)"
+        [[ "$devname" == "bus/"* ]] && exit
+        [[ "$devname" != "tty"* ]] && exit # only look for tty*
+        eval "$(udevadm info -q property --export -p $syspath)"
+        [[ -z "$ID_SERIAL" ]] && exit
+        echo "/dev/$devname - $ID_SERIAL"
+        # We have found a seemingly valid tty over USB.
+        # Setup symlink
+        ln -sfn /dev/$devname ./ttyHOST
+    )
+done
