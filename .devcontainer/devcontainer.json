@@ -7,10 +7,9 @@
         "--hostname",
         "tdd-platform",
     ],
-    // Command to expose available tty/COM ports to the container. Somewhat platform
-    // independant as .cmd is added if on Windows.
-    // https://github.com/microsoft/vscode-remote-release/issues/4568
-    "initializeCommand": ".devcontainer/hostSetup", // --device=/dev/$(readlink /dev/tty.usbmodem1421)
+    // Script to detect com/tty ports. Needs to run in the background so that it
+    // can detect later added ports and does not delay the container startup.
+    "initializeCommand": "dtach -n /tmp/tty .devcontainer/hostSetup.sh",
     "settings": {
         "editor.formatOnSave": true,
         "editor.formatOnPaste": true,

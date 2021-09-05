@@ -5,4 +5,4 @@ source /root/.espressif/ESP8266_RTOS_SDK/export.sh
 # inside a container) and use this as rfc2217 telnet port. All RTOS_SDK tools
 # look for the following environment variable.
 # https://stackoverflow.com/questions/22944631/how-to-get-the-ip-address-of-the-docker-host-from-inside-a-docker-container
-export ESPPORT=rfc2217://host.docker.internal:21214
+export ESPPORT=rfc2217://host.docker.internal:2217
