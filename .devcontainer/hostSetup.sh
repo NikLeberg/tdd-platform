@@ -11,12 +11,19 @@
 # In Docker: host.docker.internal
 # always on port 2217
 
-# Similarly in Linux for an available tty port in /dev a server winn also be
+# Similarly in Linux for an available tty port in /dev a server will also be
 # started. One could also use '--device' flag for the 'docker run' command to
 # map a device from the host into the container. But with starting a server the
 # container does not have to differentiate between WSL or real Linux. It can
 # access the ports allways at 'host.docker.internal' port '2217'.
 
+# This script needs to run in the background so that it can detect later added
+# ports and does not delay the container startup.
+if [[ "$1" != "background" ]]; then
+    pkill -f dtach
+    dtach -n /tmp/tty $0 "background"
+    exit 0
+fi
 
 # We need access to Windows information, conveniently everything that is run
 # with *.exe is automatically in the Windows environment
@@ -43,7 +50,7 @@ getComPortWSL () {
         echo "Detected $comPort."
     else
         echo "No COM port detected."
-        sleep 30
+        sleep 5
         getComPortWSL
     fi
 }
@@ -70,8 +77,8 @@ getComPortLinux () {
         echo "Detected $comPort."
     else
         echo "No COM port detected."
-        sleep 30
-        getComPortWSL
+        sleep 5
+        getComPortLinux
     fi
 }
 
@@ -100,7 +107,6 @@ startServerWSL () {
     printf "%s" "$arguments" > args.txt
     psCommand="Start-Process -FilePath .devcontainer/hub4com.exe -ArgumentList '--load=args.txt'" #  -WindowStyle Hidden
     runPowershellCommand
-    #.devcontainer/hub4com.exe --load=args.txt &
     sleep 5 # wait a bit, hub4com needs a second to read the config
     rm args.txt
 }
@@ -108,28 +114,56 @@ startServerLinux () {
     ser2net -C 2217:telnet:0:$comPort
 }
 
+connected=0
+testServerWSL() {
+    psCommand="Test-NetConnection 127.0.0.1 -Port 2217 -InformationLevel Quiet"
+    runPowershellCommand
+    if [[ "$psOutput" =~ "failed" ]]; then
+        connected=0
+    else
+        connected=1
+    fi
+}
+testServerLinux() {
+    nc -zv -w5 host.docker.internal 2217
+    if [[ $? -eq 0 ]]; then
+        connected=1
+    else
+        connected=0
+    fi
+}
+
 # Setup Host, i.e. detect port and start server.
 setupWSL () {
-    echo "2"
-    # Get available COM ports
-    getComPortWSL
-    echo "3"
-    # Start hub4com
-    startServerWSL
+    while true; do
+        testServerWSL
+        if [[ $connected -eq 0 ]]; then
+            # Get available COM ports
+            getComPortWSL
+            # Start hub4com
+            startServerWSL
+        fi
+        sleep 10
+    done
 }
 setupLinux () {
-    # Get available tty
-    getComPortLinux
-    # Start ser2net
-    startServerLinux
+    while true; do
+        testServerLinux
+        if [[ $connected -eq 0 ]]; then
+            # Get available tty
+            getComPortLinux
+            # Start ser2net
+            startServerLinux
+        fi
+        sleep 10
+    done
 }
 
 
 # Main
 sleep 1
-if [ -z "$WSL_DISTRO_NAME" ]; then
+if [[ -z "$WSL_DISTRO_NAME" ]]; then
     # We are a real Linux
-    echo "1"
     setupLinux
 else
     # We are running in WSL

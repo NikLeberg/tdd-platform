@@ -6,10 +6,11 @@
     "runArgs": [
         "--hostname",
         "tdd-platform",
+        "--add-host",
+        "host.docker.internal:host-gateway"
     ],
-    // Script to detect com/tty ports. Needs to run in the background so that it
-    // can detect later added ports and does not delay the container startup.
-    "initializeCommand": "dtach -n /tmp/tty .devcontainer/hostSetup.sh",
+    // Script to detect com/tty ports.
+    "initializeCommand": ".devcontainer/hostSetup.sh",
     "settings": {
         "editor.formatOnSave": true,
         "editor.formatOnPaste": true,
