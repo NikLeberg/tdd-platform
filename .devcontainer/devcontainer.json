@@ -3,6 +3,9 @@
     "build": {
         "dockerfile": "Dockerfile"
     },
+    "mounts": [
+        "source=/tmp/tdd-platform-ccache,target=/root/.cache/ccache,type=bind,consistency=cached"
+    ],
     "runArgs": [
         "--hostname",
         "tdd-platform",
