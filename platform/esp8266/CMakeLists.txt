@@ -23,6 +23,10 @@ function(platform_project_init_hook_impl)
     )
     target_link_libraries(platform INTERFACE platform_impl)
     target_link_libraries(platform_impl PUBLIC platform)
+    # Fix: Trigger regeneration of sdkconfig after clean.
+    set_property(TARGET platform_impl APPEND PROPERTY
+        ADDITIONAL_CLEAN_FILES ${CMAKE_BINARY_DIR}/sdkconfig
+    )
 endfunction()
 
 # Implement hook that gets run before the executable target is created.
