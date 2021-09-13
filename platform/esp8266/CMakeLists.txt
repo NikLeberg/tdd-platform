@@ -60,6 +60,16 @@ function(platform_main_finish_hook_impl executable_target)
         "${CMAKE_BINARY_DIR}/src/${executable_target}"
         "${CMAKE_BINARY_DIR}/${executable_target}"
     )
+    # Fix: RTOS_SDK does not seem to define monitor target like esp-idf does.
+    find_program(IDF_MONITOR_EXECUTABLE idf_monitor.py REQUIRED)
+    add_custom_target(
+        monitor
+        COMMAND ${IDF_MONITOR_EXECUTABLE} --port $ENV{ESPPORT}
+            --baud $ENV{ESPBAUD} ${executable_target}
+        WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
+        VERBATIM
+    )
+
 endfunction()
 
 # Fix: there is an error in CMakeLists.txt of the pthread component. Patch it.
