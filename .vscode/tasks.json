@@ -24,7 +24,16 @@
     },
     "tasks": [
         {
-            "label": "setup-buildfolder",
+            "label": "00 env",
+            "detail": "Start a shell in a correctly sourced environment.",
+            "type": "shell",
+            "command": "bash",
+            "options": {
+                "cwd": "${workspaceFolder}"
+            },
+        },
+        {
+            "label": "99 setup-buildfolder",
             "detail": "Setup build-subfolder for currently selected platform.",
             "type": "shell",
             "command": "mkdir -p build/${input:platform}",
@@ -36,14 +45,14 @@
             }
         },
         {
-            "label": "generate",
+            "label": "01 generate",
             "detail": "Generate buildsystem with cmake.",
             "type": "shell",
             "command": "cmake ./../.. -DPLATFORM=${input:platform}",
-            "dependsOn": "setup-buildfolder"
+            "dependsOn": "99 setup-buildfolder"
         },
         {
-            "label": "clean",
+            "label": "99 clean",
             "detail": "Clean generated files from last build.",
             "type": "shell",
             "command": "make clean",
@@ -52,31 +61,31 @@
             }
         },
         {
-            "label": "build",
+            "label": "02 build",
             "detail": "Build the project with gcc.",
             "type": "shell",
             "command": "make all"
         },
         {
-            "label": "tests",
+            "label": "03 tests",
             "detail": "Run all tests.",
             "type": "shell",
             "command": "make tests"
         },
         {
-            "label": "doc",
+            "label": "04 doc",
             "detail": "Generate HTML documentation for source code.",
             "type": "shell",
             "command": "make doc"
         },
         {
-            "label": "flash",
+            "label": "05 flash",
             "detail": "Run application or flash application to chip and monitor it.",
             "type": "shell",
             "command": "make flash && make monitor",
         },
         {
-            "label": "monitor",
+            "label": "06 monitor",
             "detail": "Run application or monitor it on chip.",
             "type": "shell",
             "command": "make monitor",
