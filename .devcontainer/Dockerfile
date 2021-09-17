@@ -13,12 +13,12 @@ RUN apt-get -q -y update && apt-get -q -y install --no-install-recommends \
         doxygen=1.9* \
         graphviz=2.42* \
         cppcheck=2.3* \
+        jq=1.6* \
     && rm -rf /var/lib/apt/lists/*
 
 # Install packages for ESP8266 & ESP32 support
 RUN apt-get -q -y update && apt-get -q -y install --no-install-recommends \
         libusb-1.0-0-dev=2:1.0* \
-        jq=1.6* \
         python3=3.9* \
         python3-pip=20.3* \
     && rm -rf /var/lib/apt/lists/* \

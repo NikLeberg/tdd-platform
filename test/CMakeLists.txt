@@ -3,22 +3,32 @@ message(STATUS "Processing test directory...")
 # Provide one target where all further tests can be attached to.
 add_custom_target(tests)
 
+# Filter compile_commands for only the relevant project sources.
+find_program(JQ_EXECUTABLE jq REQUIRED)
+add_custom_target(
+	test_filterCompileCommands
+	COMMAND ${JQ_EXECUTABLE}
+		'[ .[] | select(.file | contains(\"${PROJECT_NAME}\")) ] '
+		compile_commands.json > files_to_test.json
+	WORKING_DIRECTORY ${CMAKE_BINARY_DIR}
+	BYPRODUCTS files_to_test.json
+)
+
 # Add target that checks all source code
 find_program(CPPCHECK_EXECUTABLE cppcheck REQUIRED)
 add_custom_target(
 	test_cppcheck
-	# COMMAND ${CPPCHECK_EXECUTABLE} --project=compile_commands.json
-	COMMAND ${CPPCHECK_EXECUTABLE} cppcheck . -i lib -i build
+	COMMAND ${CPPCHECK_EXECUTABLE} --project=files_to_test.json
 		--enable=all --inconclusive --suppress=unusedFunction
 		--suppress=unmatchedSuppression --suppress=missingIncludeSystem
 		--suppress=missingInclude
 		--addon=cert --addon=threadsafety
 		--error-exitcode=1
-    # WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}/build/${PLATFORM}
-    WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
+    WORKING_DIRECTORY ${CMAKE_BINARY_DIR}
 	COMMENT "Running cppcheck..."
 	VERBATIM
 )
+add_dependencies(test_cppcheck test_filterCompileCommands)
 add_dependencies(tests test_cppcheck)
 
 # Only build test executables if the current platform supports it.
