@@ -38,7 +38,8 @@
             "type": "shell",
             "command": "mkdir -p build/${input:platform}",
             "options": {
-                "cwd": "${workspaceFolder}"
+                "cwd": "${workspaceFolder}",
+                "env": {}
             },
             "presentation": {
                 "close": true

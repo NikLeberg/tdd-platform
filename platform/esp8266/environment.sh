@@ -1,5 +1,5 @@
 # Source the normal RTOS_SDK export.sh to have all the common tools on $PATH.
-source /root/.espressif/ESP8266_RTOS_SDK/export.sh
+source /root/.espressif/ESP8266_RTOS_SDK/export.sh >/dev/nul
 # Set the port where the esp8266 is available. The real port of the Windows host
 # is bridged to a socket on localhost. Obtain the ip of the host (as we are
 # inside a container) and use this as rfc2217 telnet port. All RTOS_SDK tools
