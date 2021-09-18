@@ -8,17 +8,17 @@ find_program(JQ_EXECUTABLE jq REQUIRED)
 add_custom_target(
 	test_filterCompileCommands
 	COMMAND ${JQ_EXECUTABLE}
-		'[ .[] | select(.file | contains(\"${PROJECT_NAME}\")) ] '
-		compile_commands.json > files_to_test.json
+		'[ .[] | select(.file | contains(\"${PROJECT_NAME}/src\")) ] '
+		compile_commands.json > files_for_cppcheck.json
 	WORKING_DIRECTORY ${CMAKE_BINARY_DIR}
-	BYPRODUCTS files_to_test.json
+	BYPRODUCTS files_for_cppcheck.json
 )
 
 # Add target that checks all source code
 find_program(CPPCHECK_EXECUTABLE cppcheck REQUIRED)
 add_custom_target(
 	test_cppcheck
-	COMMAND ${CPPCHECK_EXECUTABLE} --project=files_to_test.json
+	COMMAND ${CPPCHECK_EXECUTABLE} --project=files_for_cppcheck.json
 		--enable=all --inconclusive --suppress=unusedFunction
 		--suppress=unmatchedSuppression --suppress=missingIncludeSystem
 		--suppress=missingInclude
