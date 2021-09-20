@@ -11,13 +11,10 @@ jobs:
         include:
           - platform: linux
             runCommand: make monitor
-            cache: ""
           - platform: esp32
             runCommand: ""
-            cache: "/root/.espressif/esp-idf/components"
           - platform: esp8266
             runCommand: ""
-            cache: "/root/.espressif/ESP8266_RTOS_SDK/components"
     env:
       BASH_ENV: ${{github.workspace}}/platform/${{matrix.platform}}/environment.sh
       # Fix: esp-idf-tool-detection defaults to ~/.espressif but ~ in github
@@ -32,14 +29,6 @@ jobs:
     - uses: actions/checkout@v2
       with:
         submodules: recursive
-
-    - name: 💾 Cache
-      uses: actions/cache@v2
-      with:
-        path: |
-          ~/.cache/ccache
-          ${{matrix.cache}}
-        key: ${{matrix.platform}}-cache
 
     - name: 📁 Setup build folder
       run: mkdir -p build/${{matrix.platform}}
