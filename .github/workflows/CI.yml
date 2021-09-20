@@ -10,7 +10,6 @@ jobs:
       matrix:
         include:
           - platform: linux
-            bashEnvFile: ""
             runCommand: make monitor
             cache: ""
           - platform: esp32
@@ -49,11 +48,15 @@ jobs:
       working-directory: build/${{matrix.platform}}
       run: cmake ./../.. -DPLATFORM=${{matrix.platform}}
 
-    - name: ⚙ Build
+    - name: 🏗️ Build
       working-directory: build/${{matrix.platform}}
       run: make all
 
-    - name: ▶ Run
+    - name: 🔍 Tests
+      working-directory: build/${{matrix.platform}}
+      run: make tests
+
+    - name: 🏃 Run
       if: ${{matrix.runCommand != ''}}
       working-directory: build/${{matrix.platform}}
       run: ${{matrix.runCommand}}
