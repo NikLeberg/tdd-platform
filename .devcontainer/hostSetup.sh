@@ -21,6 +21,7 @@
 # ports and does not delay the container startup.
 if [[ "$1" != "background" ]]; then
     pkill -f dtach
+    rm -rf /tmp/tdd-platform-tty
     dtach -n /tmp/tdd-platform-tty $0 "background"
     exit 0
 fi
