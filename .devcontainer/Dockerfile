@@ -58,10 +58,10 @@ RUN apt-get -q -y update && apt-get -q -y install --no-install-recommends \
         wget=1.21* \
         bzip2=1.0.8* \
         stlink-tools=1.6.1* \
-    wget -O gcc-arm-none-eabi.tar.bz2 https://developer.arm.com/-/media/Files/downloads/gnu-rm/${ARM_TOOLCHAIN_VERSION}/gcc-arm-none-eabi-${ARM_TOOLCHAIN_VERSION}-x86_64-linux.tar.bz2 \
-    mkdir -p ~/.stm32 \
-    tar -xjf gcc-arm-none-eabi.tar.bz2 -C ~/.stm32/ \
-    mv ~/.stm32/gcc-arm-none-eabi-${ARM_TOOLCHAIN_VERSION} ~/.stm32/gcc-arm-none-eabi/
+    && wget -O gcc-arm-none-eabi.tar.bz2 https://developer.arm.com/-/media/Files/downloads/gnu-rm/${ARM_TOOLCHAIN_VERSION}/gcc-arm-none-eabi-${ARM_TOOLCHAIN_VERSION}-x86_64-linux.tar.bz2 \
+    && mkdir -p ~/.stm32 \
+    && tar -xjf gcc-arm-none-eabi.tar.bz2 -C ~/.stm32/ \
+    && mv ~/.stm32/gcc-arm-none-eabi-${ARM_TOOLCHAIN_VERSION} ~/.stm32/gcc-arm-none-eabi/
 
 # Install sdk for CARME-M4 support
 ARG STM32_CMAKE_CLONE_URL=https://github.com/ObKo/stm32-cmake
