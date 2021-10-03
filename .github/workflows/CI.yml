@@ -15,6 +15,8 @@ jobs:
             runCommand: ""
           - platform: esp8266
             runCommand: ""
+          - platform: carme-m4
+            runCommand: ""
     env:
       BASH_ENV: ${{github.workspace}}/platform/${{matrix.platform}}/environment.sh
       # Fix: esp-idf-tool-detection defaults to ~/.espressif but ~ in github
