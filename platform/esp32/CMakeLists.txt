@@ -54,3 +54,14 @@ function(platform_main_finish_hook_impl executable_target)
     # targets, dependencies, etc.
     idf_build_executable(${executable_target})
 endfunction()
+
+# Fix: there is an invalid certificate "EA-CC" in cacrt_all.pem of the mbedtls
+# component. Patch it.
+find_program(GIT_EXECUTABLE git)
+if(GIT_EXECUTABLE)
+    execute_process(
+        COMMAND ${GIT_EXECUTABLE} apply ${CMAKE_CURRENT_LIST_DIR}/pthread.patch
+        WORKING_DIRECTORY $ENV{IDF_PATH}
+        ERROR_QUIET # Fails if patch is already applied
+    )
+endif()
