@@ -175,10 +175,10 @@ int gpio_setupInterrupt(int pin, gpio_interruptTrigger_t trigger,
  * @brief esp-idf entry point.
  *
  * Somewhere in the FreeRTOS implementation of esp-idf this function is called.
- * Simply call the main() of the main application.
+ * Simply call the application_main() of the main application.
  *
  */
 void app_main() {
     // Call the main application.
-    main();
+    application_main();
 }

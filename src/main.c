@@ -17,6 +17,7 @@
 
 #include <stdio.h>
 
+#include "platform.h"
 #include "mylib/mylib.h"
 
 
@@ -30,9 +31,10 @@
  *
  * @return int allways 0
  */
-int main() {
+int application_main() {
     char str[10];
     mylib_sayHello(str);
     printf("\n%s", str);
+    printf("\n");
     return 0;
 }

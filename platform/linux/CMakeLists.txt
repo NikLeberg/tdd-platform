@@ -14,13 +14,20 @@ target_link_libraries(platform INTERFACE
     pthread
 )
 
+# Implement hook that gets run after project() was called.
+function(platform_project_init_hook_impl)
+    # Add platform implementation / abstraction as library.
+    add_library(platform_impl
+        ${CMAKE_CURRENT_FUNCTION_LIST_DIR}/platform.c
+    )
+    target_link_libraries(platform INTERFACE platform_impl)
+    target_link_libraries(platform_impl PUBLIC platform)
+endfunction()
+
 # Implement hook that gets run after the executable target was created.
 function(platform_main_finish_hook_impl executable_target)
     # Create fake "flash" target. Do nothing.
-    add_custom_target(
-        flash
-        COMMAND echo
-    )
+    add_custom_target(flash)
     # Create "monitor" target. It runs the compiled application.
     add_custom_target(
         monitor

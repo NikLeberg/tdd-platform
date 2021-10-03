@@ -155,4 +155,4 @@ int gpio_setupInterrupt(int pin, gpio_interruptTrigger_t trigger,
  *
  * @return int errorlevel
  */
-int main();
+int application_main();
