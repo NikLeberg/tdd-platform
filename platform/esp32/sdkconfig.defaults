@@ -2,3 +2,7 @@
 CONFIG_ESP32_DEFAULT_CPU_FREQ_240=y
 CONFIG_ESPTOOLPY_FLASHSIZE_4MB=y
 CONFIG_ESP_SYSTEM_PANIC_GDBSTUB=y
+
+# Fix: Invalid certificate "EA-CC" in cacrt_all.pem of component mbedtls.
+# Disable the bundle. Alternatively one could apply the cacrt_all.patch.
+CONFIG_MBEDTLS_CERTIFICATE_BUNDLE=n
