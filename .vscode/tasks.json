@@ -62,6 +62,18 @@
             }
         },
         {
+            "label": "99 full clean",
+            "detail": "Remove all generated files from build.",
+            "type": "shell",
+            "command": "rm -rf ./${input:platform}",
+            "presentation": {
+                "close": true
+            },
+            "options": {
+                "cwd": "${workspaceFolder}/build/"
+            },
+        },
+        {
             "label": "02 build",
             "detail": "Build the project with gcc.",
             "type": "shell",
