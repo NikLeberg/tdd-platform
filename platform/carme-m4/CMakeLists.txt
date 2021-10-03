@@ -4,6 +4,7 @@
 
 # Set toolchain for Cmake.
 set(CMAKE_TOOLCHAIN_FILE $ENV{STM32_CMAKE_PATH}/cmake/stm32_gcc.cmake CACHE STRING "Toolchain file")
+set(STM32_TOOLCHAIN_PATH $ENV{STM32_TOOLCHAIN_PATH} CACHE STRING "Toolchain path")
 
 # Don't build shared libs, no dynamic load & link possible.
 set(BUILD_SHARED_LIBS OFF CACHE BOOL "don't build shared libs")
