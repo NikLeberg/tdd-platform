@@ -9,6 +9,7 @@ set(SUPPORTED_PLATFORMS
     "linux"
     "esp32"
     "esp8266"
+    "carme-m4"
 )
 
 # Options for platforms

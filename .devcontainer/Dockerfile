@@ -50,3 +50,23 @@ RUN mkdir -p ~/.espressif \
     && cd ~/.espressif \
     && git clone $ESP8266_CLONE_URL -b $ESP8266_CLONE_TAG --depth 1 \
     && ./ESP8266_RTOS_SDK/install.sh
+
+# Install packages for CARME-M4 support (see: https://askubuntu.com/a/1243405)
+ARG ARM_TOOLCHAIN_VERSION=10.3-2021.07
+
+RUN apt-get -q -y update && apt-get -q -y install --no-install-recommends \
+        wget=1.21* \
+        bzip2=1.0.8* \
+        stlink-tools=1.6.1* \
+    wget -O gcc-arm-none-eabi.tar.bz2 https://developer.arm.com/-/media/Files/downloads/gnu-rm/${ARM_TOOLCHAIN_VERSION}/gcc-arm-none-eabi-${ARM_TOOLCHAIN_VERSION}-x86_64-linux.tar.bz2 \
+    mkdir -p ~/.stm32 \
+    tar -xjf gcc-arm-none-eabi.tar.bz2 -C ~/.stm32/ \
+    mv ~/.stm32/gcc-arm-none-eabi-${ARM_TOOLCHAIN_VERSION} ~/.stm32/gcc-arm-none-eabi/
+
+# Install sdk for CARME-M4 support
+ARG STM32_CMAKE_CLONE_URL=https://github.com/ObKo/stm32-cmake
+ARG STM32_CMAKE_CLONE_TAG=v2.1.0
+
+RUN mkdir -p ~/.stm32 \
+    && cd ~/.stm32 \
+    && git clone $STM32_CMAKE_CLONE_URL -b $STM32_CMAKE_CLONE_TAG --depth 1
