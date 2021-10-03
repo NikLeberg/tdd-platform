@@ -11,7 +11,7 @@ if(CCACHE_EXECUTABLE)
     set(CMAKE_CXX_COMPILER_LAUNCHER ${CCACHE_EXECUTABLE})
 endif()
 
-project(tdd-platform LANGUAGES C)
+project(tdd-platform LANGUAGES C ASM)
 
 if(NOT CMAKE_C_COMPILER_ID STREQUAL "GNU")
 	message(FATAL_ERROR "For now, only GCC is supported.")
