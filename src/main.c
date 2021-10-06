@@ -32,7 +32,7 @@
  * @return int allways 0
  */
 int application_main() {
-    char str[10];
+    char str[10]
     mylib_sayHello(str);
     printf("\n%s", str);
     printf("\n");
