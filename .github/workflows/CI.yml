@@ -33,8 +33,10 @@ jobs:
       with:
         submodules: recursive
 
-    - name: 📁 Setup build folder
-      run: mkdir -p build/${{matrix.platform}}
+    - name: 📁 Setup build folder and problem matcher
+      run: |
+        mkdir -p build/${{matrix.platform}}
+        echo "::add-matcher::${{github.workspace}}/.github/workflows/gccMatcher.json"
 
     - name: 🛠 Generate
       working-directory: build/${{matrix.platform}}
