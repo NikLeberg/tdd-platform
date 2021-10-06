@@ -50,7 +50,21 @@
             "detail": "Generate buildsystem with cmake.",
             "type": "shell",
             "command": "cmake ./../.. -DPLATFORM=${input:platform}",
-            "dependsOn": "99 setup-buildfolder"
+            "dependsOn": "99 setup-buildfolder",
+            "problemMatcher": {
+                "pattern": [
+                    {
+                        "regexp": "CMake (Warning|Error) at (.+):(\\d+)",
+                        "severity": 1,
+                        "file": 2,
+                        "line": 3
+                    },
+                    {
+                        "regexp": "^  (.+)\\.$",
+                        "message": 1
+                    }
+                ]
+            }
         },
         {
             "label": "99 clean",

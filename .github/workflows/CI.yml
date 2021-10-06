@@ -33,9 +33,10 @@ jobs:
       with:
         submodules: recursive
 
-    - name: 📁 Setup build folder and problem matcher
+    - name: 📁 Setup build folder and problem matchers
       run: |
         mkdir -p build/${{matrix.platform}}
+        echo "::add-matcher::${{github.workspace}}/.github/workflows/cmakeMatcher.json"
         echo "::add-matcher::${{github.workspace}}/.github/workflows/gccMatcher.json"
 
     - name: 🛠 Generate

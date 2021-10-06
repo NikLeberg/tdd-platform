@@ -7,7 +7,6 @@ target_include_directories(platform INTERFACE ${CMAKE_CURRENT_LIST_DIR})
 # List of supported platforms, each platform must have a subfolder.
 set(SUPPORTED_PLATFORMS
     "linux"
-    "esp32"
     "esp8266"
     "carme-m4"
 )
