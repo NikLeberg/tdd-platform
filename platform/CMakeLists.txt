@@ -1,9 +1,5 @@
 message(STATUS "Processing platform directory...")
 
-# Interface library to attach all required platform dependencies.
-add_library(platform INTERFACE)
-target_include_directories(platform INTERFACE ${CMAKE_CURRENT_LIST_DIR})
-
 # List of supported platforms, each platform must have a subfolder.
 set(SUPPORTED_PLATFORMS
     "linux"
@@ -12,8 +8,17 @@ set(SUPPORTED_PLATFORMS
     "carme-m4"
 )
 
-# Options for platforms
-option(PLATFORM_SUPPORTS_TEST_TARGET "Platform supports the test-target." ON)
+# Options for platforms, per default nothing is supported.
+set(PLATFORM_OPTIONS
+    TEST_TARGET
+    TASKS
+    GPIO
+    PERIPH_I2C
+    PERIPH_UART
+PARENT_SCOPE)
+foreach(PLATFORM_OPTION IN LISTS PLATFORM_OPTIONS)
+    option(PLATFORM_SUPPORTS_${PLATFORM_OPTION} "Platform supports ${PLATFORM_OPTION}." OFF)
+endforeach()
 
 # Run the CMakeLists.txt of the choosen platform.
 if(PLATFORM IN_LIST SUPPORTED_PLATFORMS)
@@ -23,8 +28,20 @@ else()
 endif()
 
 # Provide a hook function that gets run after project() but bevore any target
-# gets defined. Platforms can use this to inject their custom build logic.
+# gets defined. Platforms can use this to inject their custom build logic. We
+# also use it to define the platform abstraction library that the platform 
+# implementation can use.
 function(platform_project_init_hook)
+    # Interface library to attach all required platform dependencies.
+    add_library(platform)
+    target_include_directories(platform PUBLIC ${CMAKE_CURRENT_FUNCTION_LIST_DIR}/..)
+    # Turn enabled platform options into preprocessor definitions.
+    foreach(PLATFORM_OPTION IN LISTS PLATFORM_OPTIONS)
+        if(PLATFORM_SUPPORTS_${PLATFORM_OPTION})
+            target_compile_options(platform PUBLIC -DPLATFORM_SUPPORTS_${PLATFORM_OPTION}=1)
+        endif()
+    endforeach()
+    # Run platform implementation hook.
     if(COMMAND platform_project_init_hook_impl)
         platform_project_init_hook_impl()
     endif()

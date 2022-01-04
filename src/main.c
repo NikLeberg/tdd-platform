@@ -17,7 +17,7 @@
 
 #include <stdio.h>
 
-#include "platform.h"
+#include "platform/platform.h"
 #include "mylib/mylib.h"
 
 
