@@ -17,7 +17,7 @@
 
 #include <errno.h>
 
-#include "platform.h"
+#include "platform/platform.h"
 
 
 /*

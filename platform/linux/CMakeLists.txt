@@ -5,23 +5,18 @@ if(NOT UNAME_OUTPUT STREQUAL "Linux")
     message(FATAL_ERROR "Platform was set to linux but this isn't linux.")
 endif()
 
-# Set platform options
-set(PLATFORM_SUPPORTS_TEST_TARGET ON)
-
-# Link libraries
-target_link_libraries(platform INTERFACE
-    m
-    pthread
-)
+# Enable supported platform options
+set(PLATFORM_SUPPORTS_TEST_TARGET ON CACHE BOOL "" FORCE)
 
 # Implement hook that gets run after project() was called.
 function(platform_project_init_hook_impl)
-    # Add platform implementation / abstraction as library.
-    add_library(platform_impl
+    # Add sources to platform abstraction library.
+    target_sources(platform PRIVATE
         ${CMAKE_CURRENT_FUNCTION_LIST_DIR}/platform.c
     )
-    target_link_libraries(platform INTERFACE platform_impl)
-    target_link_libraries(platform_impl PUBLIC platform)
+    # Link libraries
+    target_link_libraries(platform PRIVATE pthread)
+    target_link_libraries(platform PUBLIC m)
 endfunction()
 
 # Implement hook that gets run after the executable target was created.
