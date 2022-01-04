@@ -167,15 +167,4 @@ int gpio_setupInterrupt(int pin, gpio_interruptTrigger_t trigger,
  *
  */
 
-/**
- * @brief esp-idf entry point.
- *
- * Somewhere in the FreeRTOS implementation of esp-idf this function gets called
- * on the first xtensa-core. Simply call the application_main() of the main
- * application.
- *
- */
-void app_main() {
-    // Call the main application.
-    application_main();
-}
+/* ... */
