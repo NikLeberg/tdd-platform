@@ -23,6 +23,8 @@
 #include <stdint.h>
 #include <cmocka.h>
 
+#include "platform/platform.h"
+
 
 /*
  * Type declarations
@@ -48,8 +50,8 @@
 /**
  * @brief Options for ASAN
  *
- * The cmocka-tests get compiled and linked with "-fsanitize" e.g. ASAN. These
- * options then extend the default configuration of ASAN.
+ * The cmocka-tests get compiled and linked with "-fsanitize=address" e.g. ASAN.
+ * These options then extend the default configuration of ASAN.
  *
  * @return const char* options, separated with a colon
  */
