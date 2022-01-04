@@ -29,7 +29,7 @@ RUN apt-get -q -y update && apt-get -q -y install --no-install-recommends \
 
 # Install esp-idf for ESP32 support
 ARG ESP32_CLONE_URL=https://github.com/espressif/esp-idf.git
-ARG ESP32_CLONE_TAG=v4.3
+ARG ESP32_CLONE_TAG=v4.3.2
 
 RUN mkdir -p ~/.espressif \
     && cd ~/.espressif \
@@ -40,7 +40,9 @@ RUN mkdir -p ~/.espressif \
     && jq '(.tools[] | select(.name == "xtensa-esp32-elf" or .name == "esp32ulp-elf" or .name == "openocd-esp32")).install = "always"' \
         ./tools/tools_never.json > ./tools/tools.json \
     && rm ./tools/tools_never.json \
-    && ./install.sh
+    && sed -i -e 's/^enable_autocomplete$/#/g' ./export.sh \
+    && ./install.sh \
+    && rm -rf ../dist
 
 # Install sdk for ESP8266 support
 ARG ESP8266_CLONE_URL=https://github.com/espressif/ESP8266_RTOS_SDK.git
@@ -49,7 +51,8 @@ ARG ESP8266_CLONE_TAG=v3.4
 RUN mkdir -p ~/.espressif \
     && cd ~/.espressif \
     && git clone $ESP8266_CLONE_URL -b $ESP8266_CLONE_TAG --depth 1 \
-    && ./ESP8266_RTOS_SDK/install.sh
+    && ./ESP8266_RTOS_SDK/install.sh \
+    && rm -rf ../dist
 
 # Install packages for CARME-M4 support (see: https://askubuntu.com/a/1243405)
 ARG ARM_TOOLCHAIN_VERSION=10.3-2021.07
