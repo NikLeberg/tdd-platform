@@ -57,32 +57,7 @@
  *
  */
 
-int gpio_setupPin(int pin, gpio_dirMode_t dirMode, gpio_pullMode_t pullMode) {
-    (void)pin;
-    (void)dirMode;
-    (void)pullMode;
-    return 0;
-}
-
-int gpio_getLevel(int pin) {
-    (void)pin;
-    return 0;
-}
-
-int gpio_setLevel(int pin, int level) {
-    (void)pin;
-    (void)level;
-    return 0;
-}
-
-int gpio_setupInterrupt(int pin, gpio_interruptTrigger_t trigger,
-                        gpio_interruptCallback_t callback, void *arg) {
-    (void)pin;
-    (void)trigger;
-    (void)callback;
-    (void)arg;
-    return 0;
-}
+/* ... */
 
 
 /*
@@ -91,10 +66,11 @@ int gpio_setupInterrupt(int pin, gpio_interruptTrigger_t trigger,
  */
 
 /**
- * @brief libc entry point.
+ * @brief C entry point.
  *
- * Somewhere in the libc implementation of gcc this function is called.
- * Simply call the application_main() of the main application.
+ * In the startup.s assembler code this function gets called after initializing
+ * static variables and basic system functionality. Setup a few other things
+ * e.g. UART and then start a FreeRTOS task for the application_main() function.
  *
  */
 int main() {

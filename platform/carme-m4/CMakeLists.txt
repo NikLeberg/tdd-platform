@@ -16,11 +16,12 @@ set(PLATFORM_SUPPORTS_GPIO ON CACHE BOOL "" FORCE)
 function(platform_project_init_hook_impl)
     # Add sources to platform abstraction library.
     target_sources(platform PRIVATE
-        ${CMAKE_CURRENT_FUNCTION_LIST_DIR}/platform.c
         ${CMAKE_CURRENT_FUNCTION_LIST_DIR}/startup.s
         ${CMAKE_CURRENT_FUNCTION_LIST_DIR}/stm32f4xx_it.c
         ${CMAKE_CURRENT_FUNCTION_LIST_DIR}/syscalls.c
         ${CMAKE_CURRENT_FUNCTION_LIST_DIR}/tiny_printf.c
+        ${CMAKE_CURRENT_FUNCTION_LIST_DIR}/platform.c
+        ${CMAKE_CURRENT_FUNCTION_LIST_DIR}/gpio.c
     )
     target_include_directories(platform PRIVATE
         ${CMAKE_CURRENT_FUNCTION_LIST_DIR}
