@@ -1,28 +1,26 @@
 {
     "name": "tdd-platform",
-    "build": {
-        "dockerfile": "Dockerfile"
-    },
-    "mounts": [
-        "source=/tmp/tdd-platform-ccache,target=/root/.cache/ccache,type=bind,consistency=cached"
-    ],
-    "runArgs": [
-        "--hostname",
-        "tdd-platform",
-        "--add-host",
-        "host.docker.internal:host-gateway"
-    ],
-    // Script to detect com/tty ports.
-    "initializeCommand": ".devcontainer/hostSetup.sh",
-    "settings": {
-        "editor.formatOnSave": true,
-        "editor.formatOnPaste": true,
-        "C_Cpp.clang_format_sortIncludes": false
-    },
+    "dockerComposeFile": "docker-compose.yml",
+    "service": "tdd-platform",
+    "workspaceFolder": "/workspace/tdd-platform",
+    // IDs of extensions installed when the container is created.
     "extensions": [
+        // C code Intellisense and code formater / helpers.
         "ms-vscode.cpptools",
         "twxs.cmake",
         "cschlosser.doxdocgen",
+        // Detection and easy access to project tasks in tasks.json.
         "spmeesseman.vscode-taskexplorer"
-    ]
+    ],
+    // Container specific settings.json values on container create.
+    "settings": {
+        // Trigger format on save & paste
+        "editor.formatOnSave": true,
+        "editor.formatOnPaste": true,
+        // Set C/C++ extension to not sort includes and to not add settings.json
+        "C_Cpp.clang_format_sortIncludes": false,
+        "C_Cpp.autoAddFileAssociations": false,
+        // Slow down scrolling in intergrated terminal
+        "terminal.integrated.mouseWheelScrollSensitivity": 0.2,
+    }
 }
