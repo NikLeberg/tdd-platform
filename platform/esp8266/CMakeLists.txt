@@ -13,18 +13,16 @@ set(CMAKE_TOOLCHAIN_FILE $ENV{IDF_PATH}/tools/cmake/toolchain-esp8266.cmake CACH
 set(BUILD_SHARED_LIBS OFF CACHE BOOL "don't build shared libs")
 
 # Set platform options
-set(PLATFORM_SUPPORTS_TEST_TARGET OFF CACHE BOOL "" FORCE)
+set(PLATFORM_SUPPORTS_GPIO ON CACHE BOOL "" FORCE)
 
 # Implement hook that gets run after project() was called.
 function(platform_project_init_hook_impl)
-    # Add platform implementation / abstraction as library.
-    add_library(platform_impl
+    # Add sources to platform abstraction library.
+    target_sources(platform PRIVATE
         ${CMAKE_CURRENT_FUNCTION_LIST_DIR}/platform.c
     )
-    target_link_libraries(platform INTERFACE platform_impl)
-    target_link_libraries(platform_impl PUBLIC platform)
     # Fix: Trigger regeneration of sdkconfig after clean.
-    set_property(TARGET platform_impl APPEND PROPERTY
+    set_property(TARGET platform APPEND PROPERTY
         ADDITIONAL_CLEAN_FILES ${CMAKE_BINARY_DIR}/sdkconfig
     )
 endfunction()
@@ -48,13 +46,13 @@ endfunction()
 function(platform_main_finish_hook_impl executable_target)
     # Include CMake file that provides ESP-IDF CMake build system APIs.
     include($ENV{IDF_PATH}/tools/cmake/idf.cmake)
-    # Link idf components to the platform interface library.
-    target_link_libraries(platform INTERFACE
+    # Link idf components to the platform library.
+    target_link_libraries(platform PRIVATE
         idf::esp8266 idf::freertos idf::spi_flash idf::pthread
     )
     # Fix: Final linking of app fails with undefined reference in startup.c.
     # Force inclusion of app_main from platform implementation.
-    target_link_options(platform INTERFACE -u app_main)
+    target_link_options(platform PUBLIC -u app_main)
     # Let the build system know what the project executable is to attach more
     # targets, dependencies, etc.
     idf_build_executable(${executable_target})
@@ -73,7 +71,6 @@ function(platform_main_finish_hook_impl executable_target)
         WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
         VERBATIM
     )
-
 endfunction()
 
 # Fix: there is an error in CMakeLists.txt of the pthread component. Patch it.
