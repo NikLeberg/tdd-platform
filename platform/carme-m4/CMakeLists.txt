@@ -9,44 +9,40 @@ set(STM32_TOOLCHAIN_PATH $ENV{STM32_TOOLCHAIN_PATH} CACHE STRING "Toolchain path
 # Don't build shared libs, no dynamic load & link possible.
 set(BUILD_SHARED_LIBS OFF CACHE BOOL "don't build shared libs")
 
-# Set platform options
-set(PLATFORM_SUPPORTS_TEST_TARGET OFF CACHE BOOL "" FORCE)
+# Enable supported platform options
+set(PLATFORM_SUPPORTS_GPIO ON CACHE BOOL "" FORCE)
 
 # Implement hook that gets run after project() was called.
 function(platform_project_init_hook_impl)
-    # Add platform implementation / abstraction as library.
-    add_library(platform_impl
+    # Add sources to platform abstraction library.
+    target_sources(platform PRIVATE
         ${CMAKE_CURRENT_FUNCTION_LIST_DIR}/platform.c
         ${CMAKE_CURRENT_FUNCTION_LIST_DIR}/startup.s
         ${CMAKE_CURRENT_FUNCTION_LIST_DIR}/stm32f4xx_it.c
         ${CMAKE_CURRENT_FUNCTION_LIST_DIR}/syscalls.c
         ${CMAKE_CURRENT_FUNCTION_LIST_DIR}/tiny_printf.c
     )
-    target_include_directories(platform_impl PRIVATE
+    target_include_directories(platform PRIVATE
         ${CMAKE_CURRENT_FUNCTION_LIST_DIR}
     )
     # Add linker skript so that _Min_Heap_Size can be found.
     # Instead of "flash" there is also a "ram" version available.
-    stm32_add_linker_script(platform_impl PUBLIC
+    stm32_add_linker_script(platform PUBLIC
         ${CMAKE_CURRENT_FUNCTION_LIST_DIR}/stm32f4_flash.ld
     )
     # Add prebuilt libraries as targets and link them into the platform.
     carme_m4_import_prebuilt_library(BSP)
     carme_m4_import_prebuilt_library(FreeRTOS)
     carme_m4_import_prebuilt_library(sGUI)
-    target_link_libraries(platform_impl INTERFACE BSP FreeRTOS sGUI)
+    target_link_libraries(platform PUBLIC BSP FreeRTOS sGUI)
     # ToDo: Prebuilt libs have ben compiled with -mfloat-abi=soft, so no FPU
     # support enabled. Fix this?
-    target_compile_options(platform INTERFACE 
+    target_compile_options(platform PUBLIC 
         -mcpu=cortex-m4 # -mfpu=fpv4-sp-d16 -mfloat-abi=hard
     )
-    target_link_options(platform INTERFACE 
+    target_link_options(platform PUBLIC 
         -mcpu=cortex-m4 # -mfpu=fpv4-sp-d16 -mfloat-abi=hard
     )
-    # We need to link in both ways to propagate properties.
-    # ToDo: is there a better way?
-    target_link_libraries(platform INTERFACE platform_impl)
-    target_link_libraries(platform_impl PUBLIC platform)
 endfunction()
 
 # Implement hook that gets run after the executable target was created.

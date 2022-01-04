@@ -25,7 +25,7 @@
 #include "FreeRTOS.h"
 #include "task.h"
 
-#include "platform.h"
+#include "platform/platform.h"
 
 
 /*
