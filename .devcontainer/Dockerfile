@@ -55,7 +55,7 @@ RUN mkdir -p ~/.espressif \
     && rm -rf ../dist
 
 # Install packages for CARME-M4 support (see: https://askubuntu.com/a/1243405)
-ARG ARM_TOOLCHAIN_VERSION=10.3-2021.07
+ARG ARM_TOOLCHAIN_VERSION=10.3-2021.10
 
 RUN apt-get -q -y update && apt-get -q -y install --no-install-recommends \
         wget=1.21* \
