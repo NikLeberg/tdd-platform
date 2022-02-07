@@ -13,6 +13,7 @@ set(CMAKE_TOOLCHAIN_FILE $ENV{IDF_PATH}/tools/cmake/toolchain-esp32.cmake CACHE 
 set(BUILD_SHARED_LIBS OFF CACHE BOOL "don't build shared libs")
 
 # Enable supported platform options
+set(PLATFORM_SUPPORTS_TASKS ON CACHE BOOL "" FORCE)
 set(PLATFORM_SUPPORTS_GPIO ON CACHE BOOL "" FORCE)
 
 # Implement hook that gets run after project() was called.
@@ -20,6 +21,7 @@ function(platform_project_init_hook_impl)
     # Add sources to platform abstraction library.
     target_sources(platform PRIVATE
         ${CMAKE_CURRENT_FUNCTION_LIST_DIR}/platform.c
+        ${CMAKE_CURRENT_FUNCTION_LIST_DIR}/task.c
         ${CMAKE_CURRENT_FUNCTION_LIST_DIR}/gpio.c
     )
     # Fix: Trigger regeneration of sdkconfig after clean.

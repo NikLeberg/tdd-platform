@@ -35,8 +35,15 @@
  *
  */
 
+#include <stdlib.h>
+#include <stddef.h>
+#include <stdint.h>
+#include <stdio.h>
+#include <math.h>
+#include <errno.h>
+
 #ifdef PLATFORM_SUPPORTS_TASKS
-#include "tasks.h"
+#include "task.h"
 #endif
 #ifdef PLATFORM_SUPPORTS_GPIO
 #include "gpio.h"
