@@ -8,6 +8,13 @@ set(SUPPORTED_PLATFORMS
     "carme-m4"
 )
 
+# Run the CMakeLists.txt of the choosen platform.
+if(PLATFORM IN_LIST SUPPORTED_PLATFORMS)
+    add_subdirectory(${PLATFORM})
+else()
+    message(FATAL_ERROR "Please set PLATFORM to the platform to use.")
+endif()
+
 # Options for platforms, per default nothing is supported.
 set(PLATFORM_OPTIONS
     TEST_TARGET
@@ -17,15 +24,10 @@ set(PLATFORM_OPTIONS
     PERIPH_UART
 PARENT_SCOPE)
 foreach(PLATFORM_OPTION IN LISTS PLATFORM_OPTIONS)
-    option(PLATFORM_SUPPORTS_${PLATFORM_OPTION} "Platform supports ${PLATFORM_OPTION}." OFF)
+    if(NOT DEFINED PLATFORM_SUPPORTS_${PLATFORM_OPTION})
+        set(PLATFORM_SUPPORTS_${PLATFORM_OPTION} OFF)
+    endif()
 endforeach()
-
-# Run the CMakeLists.txt of the choosen platform.
-if(PLATFORM IN_LIST SUPPORTED_PLATFORMS)
-    add_subdirectory(${PLATFORM})
-else()
-    message(FATAL_ERROR "Please set PLATFORM to the platform to use.")
-endif()
 
 # Provide a hook function that gets run after project() but bevore any target
 # gets defined. Platforms can use this to inject their custom build logic. We

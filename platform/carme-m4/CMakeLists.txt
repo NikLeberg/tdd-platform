@@ -10,7 +10,7 @@ set(STM32_TOOLCHAIN_PATH $ENV{STM32_TOOLCHAIN_PATH} CACHE STRING "Toolchain path
 set(BUILD_SHARED_LIBS OFF CACHE BOOL "don't build shared libs")
 
 # Enable supported platform options
-set(PLATFORM_SUPPORTS_GPIO ON CACHE BOOL "" FORCE)
+set(PLATFORM_SUPPORTS_GPIO ON)
 
 # Implement hook that gets run after project() was called.
 function(platform_project_init_hook_impl)

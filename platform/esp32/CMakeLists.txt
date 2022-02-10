@@ -13,8 +13,8 @@ set(CMAKE_TOOLCHAIN_FILE $ENV{IDF_PATH}/tools/cmake/toolchain-esp32.cmake CACHE 
 set(BUILD_SHARED_LIBS OFF CACHE BOOL "don't build shared libs")
 
 # Enable supported platform options
-set(PLATFORM_SUPPORTS_TASKS ON CACHE BOOL "" FORCE)
-set(PLATFORM_SUPPORTS_GPIO ON CACHE BOOL "" FORCE)
+set(PLATFORM_SUPPORTS_TASKS ON)
+set(PLATFORM_SUPPORTS_GPIO ON)
 
 # Implement hook that gets run after project() was called.
 function(platform_project_init_hook_impl)

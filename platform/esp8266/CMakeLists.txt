@@ -13,13 +13,14 @@ set(CMAKE_TOOLCHAIN_FILE $ENV{IDF_PATH}/tools/cmake/toolchain-esp8266.cmake CACH
 set(BUILD_SHARED_LIBS OFF CACHE BOOL "don't build shared libs")
 
 # Set platform options
-set(PLATFORM_SUPPORTS_GPIO ON CACHE BOOL "" FORCE)
+set(PLATFORM_SUPPORTS_GPIO ON)
 
 # Implement hook that gets run after project() was called.
 function(platform_project_init_hook_impl)
     # Add sources to platform abstraction library.
     target_sources(platform PRIVATE
         ${CMAKE_CURRENT_FUNCTION_LIST_DIR}/platform.c
+        ${CMAKE_CURRENT_FUNCTION_LIST_DIR}/gpio.c
     )
     # Fix: Trigger regeneration of sdkconfig after clean.
     set_property(TARGET platform APPEND PROPERTY
