@@ -13,7 +13,7 @@ set(CMAKE_TOOLCHAIN_FILE $ENV{IDF_PATH}/tools/cmake/toolchain-esp8266.cmake CACH
 set(BUILD_SHARED_LIBS OFF CACHE BOOL "don't build shared libs")
 
 # Set platform options
-set(PLATFORM_SUPPORTS_GPIO ON)
+set(PLATFORM_SUPPORTS_GPIO ON CACHE BOOL "")
 
 # Implement hook that gets run after project() was called.
 function(platform_project_init_hook_impl)

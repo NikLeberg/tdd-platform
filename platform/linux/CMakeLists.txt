@@ -6,8 +6,8 @@ if(NOT UNAME_OUTPUT STREQUAL "Linux")
 endif()
 
 # Enable supported platform options
-set(PLATFORM_SUPPORTS_TEST_TARGET ON)
-set(PLATFORM_SUPPORTS_TASKS ON)
+set(PLATFORM_SUPPORTS_TEST_TARGET ON CACHE BOOL "")
+set(PLATFORM_SUPPORTS_TASKS ON CACHE BOOL "")
 
 # Implement hook that gets run after project() was called.
 function(platform_project_init_hook_impl)
