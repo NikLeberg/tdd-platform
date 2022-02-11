@@ -107,7 +107,6 @@ int gpio_setLevel(int pin, int level) {
 int gpio_setupInterrupt(int pin, gpio_interruptTrigger_t trigger,
                         gpio_interruptCallback_t callback, void *arg) {
     assert(pin >= 0 && pin < GPIO_NUM_MAX);
-    static_assert(pin >= 0);
     static int isrServiceInstalled = 0;
     if (!isrServiceInstalled) {
         if (ESP_OK != gpio_install_isr_service(0)) {
