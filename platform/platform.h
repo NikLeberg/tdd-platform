@@ -14,6 +14,7 @@
  * - Standard-I/O - printf
  * - Math - abs, exp, sin, cos, ...
  * - Errnos - EINVAL, ENOTSUP, EIO, ...
+ * - Runtime Assertions - assert
  *
  * Additional functionality may be implemented according to the function and
  * type declarations of this header file and the header files it includes.
@@ -25,6 +26,8 @@
  *      - UART - uart.h
  * If a platform implementation supports such functionality the corresponding
  * CMake option PLATFORM_SUPPORTS_* has to be enabled.
+ * Strict parameter assertion is allowed. If a platform implementation is called
+ * with the wrong arguments it is allowed to abort the execution.
  */
 
 #pragma once
@@ -41,6 +44,7 @@
 #include <stdio.h>
 #include <math.h>
 #include <errno.h>
+#include <assert.h>
 
 #ifdef PLATFORM_SUPPORTS_TASKS
 #include "task.h"

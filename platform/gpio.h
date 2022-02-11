@@ -91,8 +91,6 @@ typedef void (*gpio_interruptCallback_t)(void *);
  * @param dirMode Direction of dataflow.
  * @param pullMode Pullup & -down resistors.
  * @retval 0 on success
- * @retval EINVAL on invalid parameters
- * @retval ENOTSUP if choosen \par dirMode or \par pullMode is not supported
  * @retval EIO on gpio error
  */
 int gpio_setupPin(int pin, gpio_dirMode_t dirMode, gpio_pullMode_t pullMode);
@@ -129,7 +127,6 @@ int gpio_setLevel(int pin, int level);
  * @param callback Callback function that is executed on interrupt.
  * @param arg Optional argument for callback.
  * @retval 0 on success
- * @retval ENOTSUP if pin does not support interrupts
  * @retval EIO on gpio error
  */
 int gpio_setupInterrupt(int pin, gpio_interruptTrigger_t trigger,

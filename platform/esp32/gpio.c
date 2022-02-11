@@ -15,7 +15,6 @@
  *
  */
 
-#include <errno.h>
 #include "driver/gpio.h"
 
 #include "platform/platform.h"
@@ -51,9 +50,7 @@
  */
 
 int gpio_setupPin(int pin, gpio_dirMode_t dirMode, gpio_pullMode_t pullMode) {
-    if (0 > pin || GPIO_NUM_MAX <= pin) {
-        return ENOTSUP;
-    }
+    assert(pin >= 0 && pin < GPIO_NUM_MAX);
     esp_err_t err = ESP_OK;
     switch (dirMode) {
     case (GPIO_DIRMODE_DONT_CHANGE):
@@ -65,7 +62,7 @@ int gpio_setupPin(int pin, gpio_dirMode_t dirMode, gpio_pullMode_t pullMode) {
         err = gpio_set_direction(pin, GPIO_MODE_OUTPUT);
         break;
     default:
-        return EINVAL;
+        assert(false);
     }
     if (ESP_OK != err) {
         return EIO;
@@ -86,7 +83,7 @@ int gpio_setupPin(int pin, gpio_dirMode_t dirMode, gpio_pullMode_t pullMode) {
         err = gpio_set_pull_mode(pin, GPIO_FLOATING);
         break;
     default:
-        return EINVAL;
+        assert(false);
     }
     if (ESP_OK != err) {
         return EIO;
@@ -94,16 +91,13 @@ int gpio_setupPin(int pin, gpio_dirMode_t dirMode, gpio_pullMode_t pullMode) {
 }
 
 int gpio_getLevel(int pin) {
-    if (0 > pin || GPIO_NUM_MAX <= pin) {
-        return -ENOTSUP;
-    }
+    assert(pin >= 0 && pin < GPIO_NUM_MAX);
     return gpio_get_level(pin);
 }
 
 int gpio_setLevel(int pin, int level) {
-    if (0 > pin || GPIO_NUM_MAX <= pin) {
-        return ENOTSUP;
-    }
+    assert(pin >= 0 && pin < GPIO_NUM_MAX);
+    assert(level == 0 || level == 1);
     if (ESP_OK != gpio_set_level(pin, level)) {
         return EIO;
     }
@@ -112,18 +106,13 @@ int gpio_setLevel(int pin, int level) {
 
 int gpio_setupInterrupt(int pin, gpio_interruptTrigger_t trigger,
                         gpio_interruptCallback_t callback, void *arg) {
-    if (0 > pin || GPIO_NUM_MAX <= pin) {
-        return ENOTSUP;
-    }
+    assert(pin >= 0 && pin < GPIO_NUM_MAX);
     static int isrServiceInstalled = 0;
     if (!isrServiceInstalled) {
         if (ESP_OK != gpio_install_isr_service(0)) {
             return EIO;
         }
         isrServiceInstalled = 1;
-    }
-    if (ESP_OK != gpio_isr_handler_add(pin, callback, arg)) {
-        return ENOTSUP;
     }
     gpio_int_type_t intrType;
     switch (trigger) {
@@ -148,10 +137,15 @@ int gpio_setupInterrupt(int pin, gpio_interruptTrigger_t trigger,
         intrType = GPIO_INTR_HIGH_LEVEL;
         break;
     default:
-        return EINVAL;
+        assert(false);
     }
     if (GPIO_INT_TRIGGER_DONT_CHANGE != trigger) {
         if (ESP_OK != gpio_set_intr_type(pin, intrType)) {
+            return EIO;
+        }
+    }
+    if (callback) {
+        if (ESP_OK != gpio_isr_handler_add(pin, callback, arg)) {
             return EIO;
         }
     }

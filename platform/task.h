@@ -60,7 +60,6 @@ typedef void (*task_function_t)(void *);
  * @param priority priority at which the task will run, 0 being the smallest.
  * @param stackDepth size of the task stack.
  * @retval 0 on success
- * @retval EINVAL invalid parameter given.
  * @retval EAGAIN there are already a maximum of tasks running.
  * @retval ENOMEM not enough free memory for task stack.
  */

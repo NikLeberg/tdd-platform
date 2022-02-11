@@ -109,9 +109,7 @@ int task_create(task_handle_t *task, task_function_t function, void *argument,
     if (task) {
         *task = NULL;
     }
-    if (!function) {
-        return EINVAL;
-    }
+    assert(function);
     // Linux supports thread priorities only on realtime schedulers. And as this
     // would anyway only make a difference if we would use the CPU to 100 %,
     // ignore priority for now.
@@ -122,9 +120,8 @@ int task_create(task_handle_t *task, task_function_t function, void *argument,
     pthread_attr_t attr;
     pthread_attr_init(&attr);
     size_t stackSize = stackDepth * sizeof(void *);
-    if (pthread_attr_setstacksize(&attr, stackSize)) {
-        return EINVAL;
-    }
+    int ret = pthread_attr_setstacksize(&attr, stackSize);
+    assert(ret == 0);
     task_linux_t *linuxTask = getFreeTask();
     if (!linuxTask) {
         return ENOMEM;
@@ -162,6 +159,7 @@ void task_delete(task_handle_t task) {
 }
 
 void task_delay(uint32_t ms) {
+    assert(ms > 0);
     usleep(1000 * ms);
 }
 
@@ -172,11 +170,9 @@ uint32_t task_getMs() {
 }
 
 int task_send(task_handle_t task, uint32_t value, uint32_t msWait) {
-    if (!task) {
-        return EINVAL;
-    }
+    assert(task);
     task_linux_t *linuxTask = (task_linux_t *)task;
-    // Try to take the send semaphore. Is locked if there is already no message
+    // Try to take the send semaphore. Is locked if there is already a message
     // pending for the task.
     if (semaphoreTake(&linuxTask->lockSend, msWait)) {
         return ETIME;

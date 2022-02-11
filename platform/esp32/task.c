@@ -55,11 +55,9 @@ int task_create(task_handle_t *task, task_function_t function, void *argument,
     if (task) {
         *task = NULL;
     }
-    if (!function || priority > configMAX_PRIORITIES ||
-        stackDepth < configMINIMAL_STACK_SIZE) {
-
-        return EINVAL;
-    }
+    assert(function);
+    assert(priority <= configMAX_PRIORITIES);
+    assert(stackDepth >= configMINIMAL_STACK_SIZE);
     if (xTaskCreate(function, NULL, stackDepth, argument, priority, task) !=
         pdPASS) {
         return ENOMEM;
