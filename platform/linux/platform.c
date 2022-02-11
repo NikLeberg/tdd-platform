@@ -15,6 +15,8 @@
  *
  */
 
+#include "fff.h"
+
 #include "platform/platform.h"
 
 
@@ -31,7 +33,11 @@
  *
  */
 
-/* ... */
+/**
+ * @brief Globals for fff.
+ *
+ */
+DEFINE_FFF_GLOBALS
 
 
 /*

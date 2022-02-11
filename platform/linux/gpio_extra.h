@@ -39,10 +39,7 @@
  * @brief Globals for fff.
  *
  */
-#ifndef FFF_GLOBALS_DEFINED
-#define FFF_GLOBALS_DEFINED
-DEFINE_FFF_GLOBALS
-#endif
+extern DEFINE_FFF_GLOBALS;
 
 
 /*

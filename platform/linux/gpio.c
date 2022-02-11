@@ -1,5 +1,5 @@
 /**
- * @file platform.c
+ * @file gpio.c
  * @author NikLeberg (niklaus.leuenb@gmail.com)
  * @brief GPIO implementation for "linux"
  * @version 0.1

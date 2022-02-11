@@ -9,6 +9,7 @@ endif()
 set(PLATFORM_SUPPORTS_TEST_TARGET ON CACHE BOOL "")
 set(PLATFORM_SUPPORTS_TASKS ON CACHE BOOL "")
 set(PLATFORM_SUPPORTS_GPIO ON CACHE BOOL "")
+set(PLATFORM_SUPPORTS_PERIPH_I2C ON CACHE BOOL "")
 
 # Implement hook that gets run after project() was called.
 function(platform_project_init_hook_impl)
@@ -17,6 +18,7 @@ function(platform_project_init_hook_impl)
         ${CMAKE_CURRENT_FUNCTION_LIST_DIR}/platform.c
         ${CMAKE_CURRENT_FUNCTION_LIST_DIR}/task.c
         ${CMAKE_CURRENT_FUNCTION_LIST_DIR}/gpio.c
+        ${CMAKE_CURRENT_FUNCTION_LIST_DIR}/i2c.c
     )
     # Link libraries
     target_link_libraries(platform PRIVATE pthread rt)
