@@ -41,6 +41,7 @@
 #include <stdlib.h>
 #include <stddef.h>
 #include <stdint.h>
+#include <stdbool.h>
 #include <stdio.h>
 #include <math.h>
 #include <errno.h>
