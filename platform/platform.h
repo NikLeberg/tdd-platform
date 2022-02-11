@@ -59,6 +59,7 @@
 #include "uart.h"
 #endif
 
+
 /*
  * Type declarations
  *

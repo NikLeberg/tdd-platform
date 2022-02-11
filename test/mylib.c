@@ -43,11 +43,11 @@ static void says_hello(void **state) {
  */
 
 /**
- * @brief Main
+ * @brief Main application
  *
  * @return int count of failed tests
  */
-int main(void) {
+int application_main(void) {
     const struct CMUnitTest tests_mylib[] = {
         cmocka_unit_test(says_hello),
     };
