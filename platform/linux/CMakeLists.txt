@@ -8,6 +8,7 @@ endif()
 # Enable supported platform options
 set(PLATFORM_SUPPORTS_TEST_TARGET ON CACHE BOOL "")
 set(PLATFORM_SUPPORTS_TASKS ON CACHE BOOL "")
+set(PLATFORM_SUPPORTS_GPIO ON CACHE BOOL "")
 
 # Implement hook that gets run after project() was called.
 function(platform_project_init_hook_impl)
@@ -15,10 +16,11 @@ function(platform_project_init_hook_impl)
     target_sources(platform PRIVATE
         ${CMAKE_CURRENT_FUNCTION_LIST_DIR}/platform.c
         ${CMAKE_CURRENT_FUNCTION_LIST_DIR}/task.c
+        ${CMAKE_CURRENT_FUNCTION_LIST_DIR}/gpio.c
     )
     # Link libraries
     target_link_libraries(platform PRIVATE pthread rt)
-    target_link_libraries(platform PUBLIC m)
+    target_link_libraries(platform PUBLIC m fff)
 endfunction()
 
 # Implement hook that gets run after the executable target was created.

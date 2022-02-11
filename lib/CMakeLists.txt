@@ -16,9 +16,9 @@ if(PLATFORM_SUPPORTS_TEST_TARGET)
     # Cmocka's CMakeLists.txt creates symlink of compile_commands.json, remove it.
     execute_process(COMMAND cmake -E remove ${CMAKE_SOURCE_DIR}/compile_commands.json)
 
-    # fff
-    # A Fake Function Framework for C
-    # https://github.com/meekrosoft/fff
-    add_subdirectory(fff EXCLUDE_FROM_ALL)
-
 endif()
+
+# fff
+# A Fake Function Framework for C
+# https://github.com/meekrosoft/fff
+add_subdirectory(fff)
