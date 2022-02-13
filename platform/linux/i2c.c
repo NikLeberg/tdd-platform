@@ -63,10 +63,11 @@
  *
  */
 
-DEFINE_FAKE_VALUE_FUNC(int, i2c_init, int, int, int)
+DEFINE_FAKE_VALUE_FUNC(int, i2c_init, int, int, int, int)
 DEFINE_FAKE_VALUE_FUNC(int, i2c_deinit, int)
-DEFINE_FAKE_VALUE_FUNC(int, i2c_send, int, uint8_t, uint8_t *, size_t)
-DEFINE_FAKE_VALUE_FUNC(int, i2c_receive, int, uint8_t, uint8_t *, size_t)
+DEFINE_FAKE_VALUE_FUNC(int, i2c_send, int, uint8_t, uint8_t *, size_t, uint32_t)
+DEFINE_FAKE_VALUE_FUNC(int, i2c_receive, int, uint8_t, uint8_t *, size_t,
+                       uint32_t)
 
 void i2c_extraResetFakes(void) {
     FFF_FAKES_LIST(RESET_FAKE);
