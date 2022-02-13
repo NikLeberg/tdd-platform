@@ -1,8 +1,16 @@
 {
     "name": "tdd-platform",
-    "dockerComposeFile": "docker-compose.yml",
-    "service": "tdd-platform",
-    "workspaceFolder": "/workspace/tdd-platform",
+    "image": "ghcr.io/nikleberg/tdd-platform:latest",
+    "runArgs": [
+        "--hostname",
+        "tdd-platform",
+        "--add-host",
+        "host.docker.internal:host-gateway",
+        "--volume",
+        "/dev:/dev",
+        "--device-cgroup-rule",
+        "a 189:* rwm"
+    ],
     // IDs of extensions installed when the container is created.
     "extensions": [
         // C code Intellisense and code formater / helpers.
