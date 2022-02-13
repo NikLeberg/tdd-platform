@@ -5,7 +5,7 @@ on: [push, pull_request]
 jobs:
   build:
     runs-on: ubuntu-latest
-    container: nikolodion/tdd-platform:latest
+    container: ghcr.io/nikleberg/tdd-platform:latest
     strategy:
       fail-fast: false
       matrix:
