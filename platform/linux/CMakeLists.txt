@@ -1,9 +1,10 @@
 # Check if host is really linux
-find_program(CMAKE_EXECUTABLE uname)
-exec_program(${CMAKE_EXECUTABLE} OUTPUT_VARIABLE UNAME_OUTPUT)
-if(NOT UNAME_OUTPUT STREQUAL "Linux")
+if(NOT CMAKE_HOST_SYSTEM_NAME STREQUAL "Linux")
     message(FATAL_ERROR "Platform was set to linux but this isn't linux.")
 endif()
+
+# Set toolchain for Cmake.
+#set(CMAKE_TOOLCHAIN_FILE ${CMAKE_CURRENT_LIST_DIR}/clang.cmake CACHE STRING "Toolchain file")
 
 # Enable supported platform options
 set(PLATFORM_SUPPORTS_TEST_TARGET ON CACHE BOOL "")
@@ -30,9 +31,12 @@ function(platform_main_finish_hook_impl executable_target)
     # Create fake "flash" target. Do nothing.
     add_custom_target(flash)
     # Create "monitor" target. It runs the compiled application.
+    get_target_property(executable_dir ${executable_target} BINARY_DIR)
     add_custom_target(
         monitor
-        COMMAND ${executable_target}
+        COMMAND ./${executable_target}
+        WORKING_DIRECTORY ${executable_dir}
         COMMENT "Executing application..."
     )
+    add_dependencies(monitor ${executable_target})
 endfunction()

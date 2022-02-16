@@ -13,10 +13,6 @@ endif()
 
 project(tdd-platform LANGUAGES C ASM)
 
-if(NOT CMAKE_C_COMPILER_ID STREQUAL "GNU")
-	message(FATAL_ERROR "For now, only GCC is supported.")
-endif()
-
 # Initialise custom platform build system (if any).
 platform_project_init_hook()
 
