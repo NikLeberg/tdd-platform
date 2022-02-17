@@ -113,7 +113,7 @@ int task_create(task_handle_t *task, task_function_t function, void *argument,
     // Linux supports thread priorities only on realtime schedulers. And as this
     // would anyway only make a difference if we would use the CPU to 100 %,
     // ignore priority for now.
-    priority = 0;
+    (void)priority;
     // Initialize task attributes with (minimal) stack size and scheduler
     // priority. The stack is allowed to grow if it needs to. This isn't
     // possible with other implementations e.g. FreeRTOS.
@@ -146,9 +146,6 @@ int task_create(task_handle_t *task, task_function_t function, void *argument,
 }
 
 void task_delete(task_handle_t task) {
-    if (!task) {
-        return;
-    }
     task_linux_t *linuxTask = (task_linux_t *)task;
     if (!linuxTask) {
         linuxTask = getTaskByPthreadID(pthread_self());
