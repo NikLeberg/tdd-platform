@@ -6,7 +6,7 @@ if(NOT CMAKE_HOST_SYSTEM_NAME STREQUAL "Linux")
 endif()
 
 # Set toolchain for Cmake.
-#set(CMAKE_TOOLCHAIN_FILE ${CMAKE_CURRENT_LIST_DIR}/clang.cmake CACHE STRING "Toolchain file")
+set(CMAKE_TOOLCHAIN_FILE ${CMAKE_CURRENT_LIST_DIR}/clang.cmake CACHE STRING "Toolchain file")
 
 # Enable supported platform options
 set(PLATFORM_SUPPORTS_TEST_TARGET ON CACHE BOOL "")
