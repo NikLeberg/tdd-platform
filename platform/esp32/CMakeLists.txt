@@ -1,6 +1,8 @@
 # For how this all comes together see:
 # https://docs.espressif.com/projects/esp-idf/en/latest/esp32/api-guides/build-system.html
 
+message(STATUS "Processing platform/esp32 directory...")
+
 # Check if export.sh was sourced. We need the variables that it sets.
 if("$ENV{IDF_PATH}" STREQUAL "")
     message(FATAL_ERROR "No $IDF_PATH variable set! Please run 'source <directory of esp-idf>/export.sh' before starting cmake.")

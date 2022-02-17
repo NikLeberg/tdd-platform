@@ -2,6 +2,8 @@
 # https://gitlab.ti.bfh.ch/unterricht/carme-m4/templates/freertos_template and
 # converted to VSCode with the help of https://github.com/ObKo/stm32-cmake.
 
+message(STATUS "Processing platform/carme-m4 directory...")
+
 # Set toolchain for Cmake.
 set(CMAKE_TOOLCHAIN_FILE $ENV{STM32_CMAKE_PATH}/cmake/stm32_gcc.cmake CACHE STRING "Toolchain file")
 set(STM32_TOOLCHAIN_PATH $ENV{STM32_TOOLCHAIN_PATH} CACHE STRING "Toolchain path")

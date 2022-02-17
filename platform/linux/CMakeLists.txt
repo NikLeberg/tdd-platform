@@ -1,3 +1,5 @@
+message(STATUS "Processing platform/linux directory...")
+
 # Check if host is really linux
 if(NOT CMAKE_HOST_SYSTEM_NAME STREQUAL "Linux")
     message(FATAL_ERROR "Platform was set to linux but this isn't linux.")
