@@ -4,29 +4,32 @@ add_custom_target(tests_static)
 add_dependencies(tests tests_static)
 
 # Create copy of main compile_commands.json with only the relevant project
-# sources. Avoids checks on platform and other libraries.
+# sources. Avoids checks on platform and other libraries. Also fix or replace
+# some compiler flags that clang does not understand.
 find_program(JQ_EXECUTABLE jq)
-if(JQ_EXECUTABLE)
+find_program(SED_EXECUTABLE sed)
+if(JQ_EXECUTABLE AND SED_EXECUTABLE)
     add_custom_target(
         test_static_filterCompileCommands
         COMMAND ${JQ_EXECUTABLE}
             '[ .[] | select(.file | contains(\"${PROJECT_NAME}/src\")) ]'
-            compile_commands.json > ${CMAKE_CURRENT_BINARY_DIR}/compile_commands.json
-        WORKING_DIRECTORY ${CMAKE_BINARY_DIR}
-        BYPRODUCTS ${CMAKE_CURRENT_BINARY_DIR}/compile_commands.json
+            ${CMAKE_BINARY_DIR}/compile_commands.json > compile_commands.json
+        COMMAND ${SED_EXECUTABLE} -i 's/-mlongcalls/ /g' compile_commands.json
+        WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
+        BYPRODUCTS compile_commands.json
     )
 else()
     message(WARNING
-        "jq for filtering 'compile_commands.json' is not installed. "
+        "jq and/or sed for filtering 'compile_commands.json' are not installed. "
         "Falling back to no filtering."
     )
     add_custom_target(
         test_static_filterCompileCommands
         COMMAND ${CMAKE_COMMAND} -E copy
+            ${CMAKE_BINARY_DIR}/compile_commands.json
             compile_commands.json
-            ${CMAKE_CURRENT_BINARY_DIR}/compile_commands.json
-        WORKING_DIRECTORY ${CMAKE_BINARY_DIR}
-        BYPRODUCTS ${CMAKE_CURRENT_BINARY_DIR}/compile_commands.json
+        WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
+        BYPRODUCTS compile_commands.json
     )
 endif()
 
