@@ -43,11 +43,11 @@ jobs:
 
     - name: 🏗️ Build
       working-directory: build/${{matrix.platform}}
-      run: make all
+      run: make all -j$(nproc)
 
     - name: 🔍 Tests
       working-directory: build/${{matrix.platform}}
-      run: make tests
+      run: make tests -j$(nproc)
 
     - name: 🏃 Run
       if: ${{matrix.runCommand != ''}}

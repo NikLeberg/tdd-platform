@@ -80,13 +80,13 @@
             "label": "02 build",
             "detail": "Build the project with gcc.",
             "type": "shell",
-            "command": "make all"
+            "command": "make all -j$(nproc)"
         },
         {
             "label": "03 tests",
             "detail": "Run all tests.",
             "type": "shell",
-            "command": "make tests"
+            "command": "make tests -j$(nproc)"
         },
         {
             "label": "04 doc",
