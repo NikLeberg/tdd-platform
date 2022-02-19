@@ -1,0 +1,36 @@
+name: Fuzzing
+
+on: 
+  workflow_dispatch:
+    inputs:
+      target:
+        description: "Target to fuzz."     
+        required: true
+        type: choice
+        options:
+        - buggy_api
+
+jobs:
+  fuzz:
+    runs-on: ubuntu-latest
+    container: ghcr.io/nikleberg/tdd-platform:latest
+    env:
+      BASH_ENV: ${{github.workspace}}/platform/${{matrix.platform}}/environment.sh
+      IDF_TOOLS_PATH: /root/.espressif
+    defaults:
+      run:
+        shell: bash
+
+    steps:
+      - uses: actions/checkout@v2
+        with:
+          submodules: recursive
+
+      - name: 🛠 Generate
+        run: cmake -S . -B build/linux -DPLATFORM=linux
+
+      - name: 🏃 Build & Fuzz
+        working-directory: build/linux
+        env:
+          TARGET: ${{github.event.inputs.target}}
+        run: make fuzzing_${TARGET}_run
