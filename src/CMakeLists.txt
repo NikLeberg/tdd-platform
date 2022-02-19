@@ -5,6 +5,7 @@ platform_main_init_hook()
 
 # Add the many modules of the project as libraries that link themself to "main".
 add_subdirectory(mylib)
+add_subdirectory(buggy_api)
 
 # Define the main project executable as ${CMAKE_PROJECT_NAME}.
 add_executable(${CMAKE_PROJECT_NAME} main.c)
