@@ -10,7 +10,7 @@ find_program(JQ_EXECUTABLE jq)
 find_program(SED_EXECUTABLE sed)
 if(JQ_EXECUTABLE AND SED_EXECUTABLE)
     add_custom_target(
-        test_static_filterCompileCommands
+        static_filterCompileCommands
         COMMAND ${JQ_EXECUTABLE}
             '[ .[] | select(.file | contains(\"${PROJECT_NAME}/src\")) ]'
             ${CMAKE_BINARY_DIR}/compile_commands.json > compile_commands.json
@@ -24,7 +24,7 @@ else()
         "Falling back to no filtering."
     )
     add_custom_target(
-        test_static_filterCompileCommands
+        static_filterCompileCommands
         COMMAND ${CMAKE_COMMAND} -E copy
             ${CMAKE_BINARY_DIR}/compile_commands.json
             compile_commands.json
@@ -37,7 +37,7 @@ endif()
 find_program(CPPCHECK_EXECUTABLE cppcheck)
 if(CPPCHECK_EXECUTABLE)
     add_custom_target(
-        test_static_cppcheck
+        static_cppcheck
         COMMAND ${CPPCHECK_EXECUTABLE} --project=compile_commands.json
             --enable=all --inconclusive --suppress=unusedFunction
             --suppress=unmatchedSuppression --suppress=missingIncludeSystem
@@ -48,8 +48,8 @@ if(CPPCHECK_EXECUTABLE)
         COMMENT "Running cppcheck..."
         VERBATIM
     )
-    add_dependencies(test_static_cppcheck test_static_filterCompileCommands)
-    add_dependencies(tests_static test_static_cppcheck)
+    add_dependencies(static_cppcheck static_filterCompileCommands)
+    add_dependencies(tests_static static_cppcheck)
 else()
     message(WARNING
         "Cppcheck for static code analysis is not installed. "
@@ -62,14 +62,14 @@ endif()
 find_program(CLANGTIDY_EXECUTABLE run-clang-tidy)
 if(CLANGTIDY_EXECUTABLE)
     add_custom_target(
-        test_static_clangTidy
+        static_clangTidy
         COMMAND ${CLANGTIDY_EXECUTABLE} -q -header-filter=.
         -checks=*,-llvmlibc*,-llvm-header-guard,-llvm-include-order
         WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
         COMMENT "Running clang-tidy..."
     )
-    add_dependencies(test_static_clangTidy test_static_filterCompileCommands)
-    add_dependencies(tests_static test_static_clangTidy)
+    add_dependencies(static_clangTidy static_filterCompileCommands)
+    add_dependencies(tests_static static_clangTidy)
 else()
     message(WARNING
         "Clang-Tidy for static code analysis is not installed. "
