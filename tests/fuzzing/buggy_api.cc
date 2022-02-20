@@ -15,13 +15,13 @@
  *
  */
 
-#include <string.h>
+extern "C" {
 #include <stdio.h>
-// #include <fuzzer/FuzzedDataProvider.h>
-
 #include "fuzzing.h"
 #include "buggy_api/buggy_api.h"
+}
 
+#include <fuzzer/FuzzedDataProvider.h>
 
 /*
  * Private Functions
@@ -46,22 +46,22 @@
  * @param argv unused
  * @retval 0
  */
-int LLVMFuzzerInitialize(int *argc, char ***argv) {
+extern "C" int LLVMFuzzerInitialize(int *argc, char ***argv) {
     (void)argc;
     (void)argv;
     // Generate seed file with a defined valid codepath.
-    FILE *fp = fopen("./seeds/valid-seed", "w");
-    uint8_t api_function = 0;
-    fwrite(&api_function, sizeof(uint8_t), 1, fp);
-    uint32_t api_argument = 111; // should be 123 to trigger crash
-    fwrite(&api_argument, sizeof(uint32_t), 1, fp);
-    api_function = 1;
-    fwrite(&api_function, sizeof(uint8_t), 1, fp);
-    api_argument = 111; // should be 321 to trigger crash
-    fwrite(&api_argument, sizeof(uint32_t), 1, fp);
-    api_function = 2;
-    fwrite(&api_function, sizeof(uint8_t), 1, fp);
-    fclose(fp);
+    // FILE *fp = fopen("./seeds/valid-seed", "w");
+    // uint8_t api_function = 0;
+    // fwrite(&api_function, sizeof(uint8_t), 1, fp);
+    // uint32_t api_argument = 111; // should be 123 to trigger crash
+    // fwrite(&api_argument, sizeof(uint32_t), 1, fp);
+    // api_function = 1;
+    // fwrite(&api_function, sizeof(uint8_t), 1, fp);
+    // api_argument = 111; // should be 321 to trigger crash
+    // fwrite(&api_argument, sizeof(uint32_t), 1, fp);
+    // api_function = 2;
+    // fwrite(&api_function, sizeof(uint8_t), 1, fp);
+    // fclose(fp);
     return 0;
 }
 
@@ -74,21 +74,27 @@ int LLVMFuzzerInitialize(int *argc, char ***argv) {
  * @param size length of data
  * @retval 0
  */
-int LLVMFuzzerTestOneInput(const uint8_t *data, size_t size) {
-    fuzzer_setData(data, size);
+extern "C" int LLVMFuzzerTestOneInput(const uint8_t *data, size_t size) {
+    FuzzedDataProvider fuzzer(data, size);
+    // uint8_t arr[16] = {0};
+    // void *p = arr + 1;
+    // int i = 0;
+    // i = *((int *)p);
+    // printf("\n test val: %d", i);
+    // abort();
     // Reset the API
     buggy_api_setState(0);
     buggy_api_setState2(0);
     // Select which function of the API to call. And then call the function with
     // the required arguments.
-    while (fuzzer_remainingData()) {
-        switch (fuzzer_consume_uint8_t()) {
+    while (fuzzer.remaining_bytes()) {
+        switch (fuzzer.ConsumeIntegral<uint8_t>()) {
         case 0: {
-            buggy_api_setState(fuzzer_consume_uint32_t());
+            buggy_api_setState(fuzzer.ConsumeIntegral<uint32_t>());
             break;
         }
         case 1: {
-            buggy_api_setState2(fuzzer_consume_uint32_t());
+            buggy_api_setState2(fuzzer.ConsumeIntegral<uint32_t>());
             break;
         }
         case 2:

@@ -5,6 +5,9 @@ message(STATUS "Processing tests/fuzzing directory...")
 # libFuzzer - https://llvm.org/docs/LibFuzzer.html
 # Structure aware - https://github.com/google/fuzzing/blob/master/docs/structure-aware-fuzzing.md
 
+cmake_minimum_required(VERSION 3.13)
+project(tdd-platform LANGUAGES CXX)
+
 add_custom_target(tests_fuzzing)
 # The fuzzing target is not built together with the other test targets.
 
