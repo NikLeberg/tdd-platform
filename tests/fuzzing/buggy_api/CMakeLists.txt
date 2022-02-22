@@ -1,0 +1,1 @@
+fuzzer_add_target(buggy_api)

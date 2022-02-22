@@ -21,7 +21,7 @@ extern "C" {
 #include "buggy_api/buggy_api.h"
 }
 
-#include "build/linux/tests/fuzzing/buggy_api.pb.h"
+#include "buggy_api.pb.h"
 #include <fuzzer/FuzzedDataProvider.h>
 #include <libfuzzer/libfuzzer_macro.h>
 

@@ -4,18 +4,16 @@ message(STATUS "Processing tests/fuzzing directory...")
 # General idea - https://www.code-intelligence.com/fuzzing-with-dependencies
 # libFuzzer - https://llvm.org/docs/LibFuzzer.html
 # Structure aware - https://github.com/google/fuzzing/blob/master/docs/structure-aware-fuzzing.md
+# 
+# Ideas for the future:
+# Unoptimizing code - https://lafintel.wordpress.com/
+# Data flow based - https://releases.llvm.org/3.9.0/docs/LibFuzzer.html#data-flow-guided-fuzzing
 
 cmake_minimum_required(VERSION 3.13)
 project(tdd-platform LANGUAGES CXX)
 
 add_custom_target(tests_fuzzing)
 # The fuzzing target is not built together with the other test targets.
-
-# Library targets to fuzz. For each target listed, a <name>.c file is expected
-# that contains the fuzzing code. Additionally a <name>.proto file is expected.
-set(FUZZ_LIBS
-	buggy_api
-)
 
 # Include and find definitions for Googles Protocol Buffer.
 include(FindProtobuf)
@@ -39,7 +37,7 @@ target_link_libraries(fuzzing_common INTERFACE
 
 # Duplicate a target by copying its sources and includes.
 # ToDo: Also copy dependencies
-function(fuzzer_target_duplicate_instrument target duplicate)
+macro(fuzzer_add_instrumented_double target duplicate)
 	get_target_property(target_sources ${target} SOURCES)
 	get_target_property(target_source_dir ${target} SOURCE_DIR)
 	get_target_property(target_includes ${target} INCLUDE_DIRECTORIES)
@@ -48,30 +46,46 @@ function(fuzzer_target_duplicate_instrument target duplicate)
 	target_include_directories(${target}_double PUBLIC ${target_includes})
 	target_compile_options(${target}_double PUBLIC -fsanitize=fuzzer,undefined,leak,address)
 	target_link_options(${target}_double PUBLIC -fsanitize=fuzzer,undefined,leak,address)
-	set(${duplicate} ${target}_double PARENT_SCOPE)
-endfunction()
+	set(${duplicate} ${target}_double)
+endmacro()
 
-# Create fuzzing executables for each library unter test.
-foreach(FUZZ_LIB IN ITEMS ${FUZZ_LIBS})
+# Create fuzzing executable for library unter test. Implemented as macro so that
+# it runs in the context of the current directory.
+# ToDo: Asan can't symbolize
+macro(fuzzer_add_target lib_name)
 	# Duplicate libary test target and instrument it.
-	fuzzer_target_duplicate_instrument(${FUZZ_LIB} FUZZ_LIB_DOUBLE)
+	fuzzer_add_instrumented_double(${lib_name} lib_double)
 	# Create a fuzzer executable.
-	set(FUZZ_EXE fuzzing_${FUZZ_LIB})
-	protobuf_generate_cpp(PROTO_SRC PROTO_HEADER ${FUZZ_LIB}.proto)
-	add_executable(${FUZZ_EXE} ${FUZZ_LIB}.cc ${PROTO_SRC} ${PROTO_HEADER})
-	target_link_libraries(${FUZZ_EXE} PRIVATE fuzzing_common ${FUZZ_LIB_DOUBLE})
-	add_dependencies(tests_fuzzing ${FUZZ_EXE})
-	# Create paths for the inputs and outputs during fuzzing.
-	file(MAKE_DIRECTORY
-		${CMAKE_CURRENT_BINARY_DIR}/${FUZZ_LIB}/results
-		${CMAKE_CURRENT_BINARY_DIR}/${FUZZ_LIB}/corpus
-		${CMAKE_CURRENT_BINARY_DIR}/${FUZZ_LIB}/seeds
+	set(fuzz_exe fuzzing_${lib_name})
+	add_executable(${fuzz_exe} ${lib_name}.cc)
+	if(EXISTS ${CMAKE_CURRENT_SOURCE_DIR}/${lib_name}.proto)
+		# If a protobuf file is present, compile and add it.
+		protobuf_generate_cpp(proto_src proto_hdr ${lib_name}.proto)
+		target_sources(${fuzz_exe} PRIVATE ${proto_src} ${proto_hdr})
+		target_include_directories(${fuzz_exe} PRIVATE ${CMAKE_CURRENT_BINARY_DIR})
+	endif()
+	target_link_libraries(${fuzz_exe} PRIVATE fuzzing_common ${lib_double})
+	add_dependencies(tests_fuzzing ${fuzz_exe})
+	# Create path for the fuzzing corpus.
+	file(MAKE_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/corpus)
+	if(EXISTS ${CMAKE_CURRENT_SOURCE_DIR}/seeds)
+		set(seed_dir ${CMAKE_CURRENT_SOURCE_DIR}/seeds)
+	endif()
+	# Target to run fuzzer cross_over_uniform_dist
+	add_custom_target(${fuzz_exe}_run
+		COMMAND ./${fuzz_exe}
+			-use_value_profile=1 ./corpus ${seed_dir}
+		WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
+		DEPENDS ${fuzz_exe}
+		BYPRODUCTS
+			${CMAKE_CURRENT_BINARY_DIR}/results
+			${CMAKE_CURRENT_BINARY_DIR}/corpus
+			${CMAKE_CURRENT_BINARY_DIR}/seeds
 	)
-	# Target to run fuzzer
-	add_custom_target(${FUZZ_EXE}_run
-		COMMAND ../${FUZZ_EXE} -use_value_profile=1 -artifact_prefix=./results/ ./corpus ./seeds
-		WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/${FUZZ_LIB}
-		DEPENDS ${FUZZ_EXE}
-		BYPRODUCTS ${CMAKE_CURRENT_BINARY_DIR}/${FUZZ_LIB}
-	)
-endforeach()
+endmacro()
+
+# Add subdirectories of fuzzers for different targets. they are supposed to use
+# the fuzzer_add_target macro. Each target then is expected to provide a
+# <name>.cc file and optionally a <name>.proto file. If a seeds folder exists it
+# is also used a seed input for libFuzzer.
+add_subdirectory(buggy_api)
