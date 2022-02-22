@@ -32,7 +32,7 @@ target_link_libraries(unit_common INTERFACE main cmocka)
 # Create test executables for each library unter test.
 foreach(TEST_LIB IN ITEMS ${TEST_LIBS})
 	add_executable(unit_${TEST_LIB} ${TEST_LIB}.c)
-	target_link_libraries(unit_${TEST_LIB} PRIVATE unit_common)
+	target_link_libraries(unit_${TEST_LIB} PRIVATE unit_common ${TEST_LIB})
 	add_dependencies(tests_unit_run unit_${TEST_LIBS})
 	add_test(NAME unit_${TEST_LIB} COMMAND unit_${TEST_LIB})
 endforeach()
