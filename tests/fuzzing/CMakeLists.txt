@@ -17,8 +17,12 @@ add_custom_target(tests_fuzzing)
 
 # Include and find definitions for Googles Protocol Buffer.
 include(FindProtobuf)
-find_package(Protobuf REQUIRED)
-find_package(libprotobuf-mutator REQUIRED)
+find_package(Protobuf)
+find_package(libprotobuf-mutator)
+if(NOT Protobuf_FOUND OR NOT libprotobuf-mutator_FOUND)
+	# Without those packages fuzzing cant be done.
+	return()
+endif()
 
 # Create test interface library for propagation of common properties.
 add_library(fuzzing_common INTERFACE)
