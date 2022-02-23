@@ -40,16 +40,17 @@ target_link_libraries(fuzzing_common INTERFACE
 
 # Duplicate a target by copying its sources and includes.
 # ToDo: Also copy dependencies
-macro(fuzzer_add_instrumented_double target duplicate)
+macro(fuzzer_add_instrumented_double target instrumentation duplicate)
 	get_target_property(target_sources ${target} SOURCES)
 	get_target_property(target_source_dir ${target} SOURCE_DIR)
 	get_target_property(target_includes ${target} INCLUDE_DIRECTORIES)
 	list(TRANSFORM target_sources PREPEND ${target_source_dir}/)
-	add_library(${target}_double ${target_sources})
-	target_include_directories(${target}_double PUBLIC ${target_includes})
-	target_compile_options(${target}_double PUBLIC -fsanitize=fuzzer,undefined,leak,address)
-	target_link_options(${target}_double PUBLIC -fsanitize=fuzzer,undefined,leak,address)
-	set(${duplicate} ${target}_double)
+	string(RANDOM suffix)
+	set(${duplicate} ${target}_${suffix})
+	add_library(${${duplicate}} STATIC ${target_sources})
+	target_include_directories(${${duplicate}} PUBLIC ${target_includes})
+	target_compile_options(${${duplicate}} PUBLIC -fsanitize=${instrumentation})
+	target_link_options(${${duplicate}} PUBLIC -fsanitize=${instrumentation})
 endmacro()
 
 # Create fuzzing executable for library unter test. Implemented as macro so that
@@ -57,7 +58,7 @@ endmacro()
 # ToDo: Asan can't symbolize
 macro(fuzzer_add_target lib_name)
 	# Duplicate libary test target and instrument it.
-	fuzzer_add_instrumented_double(${lib_name} lib_double)
+	fuzzer_add_instrumented_double(${lib_name} fuzzer,undefined,leak,address lib_double)
 	# Create a fuzzer executable.
 	set(fuzz_exe fuzzing_${lib_name})
 	add_executable(${fuzz_exe} ${lib_name}.cc)
