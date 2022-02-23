@@ -1,8 +1,8 @@
 syntax = "proto2";
 
-// List of many function calls that should be performed in sequence.
-message Functions {
-  repeated Function functions = 1;
+// A sequence of function calls that should be performed.
+message Sequence {
+  repeated Function function = 1;
 }
 
 // Union of a possible function call.

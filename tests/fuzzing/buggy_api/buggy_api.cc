@@ -25,6 +25,7 @@ extern "C" {
 #include <fuzzer/FuzzedDataProvider.h>
 #include <libfuzzer/libfuzzer_macro.h>
 
+
 /*
  * Private Functions
  *
@@ -47,13 +48,13 @@ extern "C" {
  *
  * @param input deserialized protobuf data from fuzzer
  */
-DEFINE_PROTO_FUZZER(const Functions &input) {
+DEFINE_PROTO_FUZZER(const Sequence &input) {
     // Reset the API
     buggy_api_setState(0);
     buggy_api_setState2(0);
     // Select which function of the API to call. And then call the function with
     // the required arguments.
-    for (const auto &function : input.functions()) {
+    for (const auto &function : input.function()) {
         switch (function.function_case()) {
         case Function::kSetState:
             buggy_api_setState(function.setstate().state());
