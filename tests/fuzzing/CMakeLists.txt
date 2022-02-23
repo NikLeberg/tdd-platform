@@ -9,8 +9,7 @@ message(STATUS "Processing tests/fuzzing directory...")
 # Unoptimizing code - https://lafintel.wordpress.com/
 # Data flow based - https://releases.llvm.org/3.9.0/docs/LibFuzzer.html#data-flow-guided-fuzzing
 
-cmake_minimum_required(VERSION 3.13)
-project(tdd-platform LANGUAGES CXX)
+enable_language(CXX)
 
 add_custom_target(tests_fuzzing)
 # The fuzzing target is not built together with the other test targets.
