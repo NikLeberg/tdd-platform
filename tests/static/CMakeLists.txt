@@ -59,7 +59,7 @@ endif()
 
 # Add target that checks all source code with Cppcheck
 # ToDo: Fail on error
-find_program(CLANGTIDY_EXECUTABLE run-clang-tidy)
+find_program(CLANGTIDY_EXECUTABLE NAMES run-clang-tidy run-clang-tidy-13)
 if(CLANGTIDY_EXECUTABLE)
     add_custom_target(
         static_clangTidy
