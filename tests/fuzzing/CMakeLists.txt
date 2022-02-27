@@ -39,29 +39,12 @@ target_link_libraries(fuzzing_common INTERFACE
 	libprotobuf-mutator::protobuf-mutator-libfuzzer
 )
 
-# Duplicate a target by copying its sources and includes.
-function(fuzzer_add_instrumented_double target instrumentation duplicate)
-	get_target_property(target_srcs ${target} SOURCES)
-	get_target_property(target_src_dir ${target} SOURCE_DIR)
-	get_target_property(target_includes ${target} INCLUDE_DIRECTORIES)
-	get_target_property(target_libs ${target} LINK_LIBRARIES)
-	list(TRANSFORM target_srcs PREPEND ${target_src_dir}/)
-	string(RANDOM suffix)
-	set(dup_name ${target}_${suffix})
-	set(${duplicate} ${dup_name} PARENT_SCOPE)
-	add_library(${dup_name} STATIC ${target_srcs})
-	target_include_directories(${dup_name} PUBLIC ${target_includes})
-	if(target_libs)
-		target_link_libraries(${dup_name} PRIVATE ${target_libs})
-	endif()
-	target_compile_options(${dup_name} PUBLIC -fsanitize=${instrumentation})
-	target_link_options(${dup_name} PUBLIC -fsanitize=${instrumentation})
-endfunction()
-
 # Create fuzzing executable for library unter test.
 function(fuzzer_add_target lib_name)
 	# Duplicate libary test target and instrument it.
-	fuzzer_add_instrumented_double(${lib_name} fuzzer,undefined,leak,address lib_double)
+	test_target_duplicate(${lib_name} lib_double)
+	target_compile_options(${lib_double} PUBLIC -fsanitize=fuzzer,undefined,leak,address)
+	target_link_options(${lib_double} PUBLIC -fsanitize=fuzzer,undefined,leak,address)
 	# Create a fuzzer executable.
 	set(fuzz_exe fuzzing_${lib_name})
 	add_executable(${fuzz_exe} ${lib_name}.cc)
