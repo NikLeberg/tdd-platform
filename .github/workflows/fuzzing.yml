@@ -35,6 +35,7 @@ jobs:
         with:
           name: fuzzing_${{matrix.target}}_corpus
           path: build/linux/tests/fuzzing/${{matrix.target}}/corpus
+        continue-on-error: true
 
       - name: 🙈 Fuzz
         working-directory: build/linux
