@@ -39,7 +39,7 @@ jobs:
       - name: 🙈 Fuzz
         working-directory: build/linux
         run: make fuzzing_${{matrix.target}}_run
-        timeout: 330 # 5h30min
+        timeout-minutes: 330 # 5h30min
 
       - name: 🗜 Merge Corpus
         if: always()
