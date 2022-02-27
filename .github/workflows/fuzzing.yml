@@ -1,22 +1,19 @@
-name: Fuzzing
+name: fuzzing
 
-on: 
-  workflow_dispatch:
-    inputs:
-      target:
-        description: "Target to fuzz."     
-        required: true
-        type: choice
-        options:
-        - buggy_api
+on:
+  push:
+    branches:
+      - main
 
 jobs:
   fuzz:
     runs-on: ubuntu-latest
     container: ghcr.io/nikleberg/tdd-platform:latest
-    env:
-      BASH_ENV: ${{github.workspace}}/platform/${{matrix.platform}}/environment.sh
-      IDF_TOOLS_PATH: /root/.espressif
+    strategy:
+      fail-fast: false
+      matrix:
+        # List of all fuzzing targets.
+        - target: [buggy_api]
     defaults:
       run:
         shell: bash
@@ -29,8 +26,39 @@ jobs:
       - name: 🛠 Generate
         run: cmake -S . -B build/linux -DPLATFORM=linux
 
-      - name: 🏃 Build & Fuzz
+      - name: 🏗️ Build
         working-directory: build/linux
-        env:
-          TARGET: ${{github.event.inputs.target}}
-        run: make fuzzing_${TARGET}_run
+        run: make fuzzing_${{matrix.target}}
+
+      - name: 🡇 Download Corpus
+        uses: actions/download-artifact@v2
+        with:
+          name: fuzzing_${{matrix.target}}_corpus
+          path: build/linux/tests/fuzzing/${{matrix.target}}/corpus
+
+      - name: 🙈 Fuzz
+        working-directory: build/linux
+        run: make fuzzing_${{matrix.target}}_run
+        timeout: 330 # 5h30min
+
+      - name: 🗜 Merge Corpus
+        if: always()
+        working-directory: build/linux
+        run: make fuzzing_${{matrix.target}}_merge
+
+      - name: 🡅 Upload Corpus
+        if: always()
+        uses: actions/upload-artifact@v2
+        with:
+          name: fuzzing_${{matrix.target}}_corpus
+          path: build/linux/tests/fuzzing/${{matrix.target}}/merged
+
+      - name: 🎯 Upload Crash
+        if: always()
+        uses: actions/upload-artifact@v2
+        with:
+          name: fuzzing_${{matrix.target}}_crash
+          path: |
+            build/linux/tests/fuzzing/${{matrix.target}}/fuzzing_*
+            build/linux/tests/fuzzing/${{matrix.target}}/crash-*
+
