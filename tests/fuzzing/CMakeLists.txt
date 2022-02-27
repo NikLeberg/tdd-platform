@@ -8,6 +8,7 @@ message(STATUS "Processing tests/fuzzing directory...")
 # Ideas for the future:
 # Unoptimizing code - https://lafintel.wordpress.com/
 # Data flow based - https://releases.llvm.org/3.9.0/docs/LibFuzzer.html#data-flow-guided-fuzzing
+#				  - https://github.com/google/oss-fuzz/issues/1632
 
 enable_language(CXX)
 
@@ -39,23 +40,25 @@ target_link_libraries(fuzzing_common INTERFACE
 )
 
 # Duplicate a target by copying its sources and includes.
-# ToDo: Also copy dependencies
 macro(fuzzer_add_instrumented_double target instrumentation duplicate)
-	get_target_property(target_sources ${target} SOURCES)
-	get_target_property(target_source_dir ${target} SOURCE_DIR)
+	get_target_property(target_srcs ${target} SOURCES)
+	get_target_property(target_src_dir ${target} SOURCE_DIR)
 	get_target_property(target_includes ${target} INCLUDE_DIRECTORIES)
-	list(TRANSFORM target_sources PREPEND ${target_source_dir}/)
+	get_target_property(target_libs ${target} LINK_LIBRARIES)
+	list(TRANSFORM target_srcs PREPEND ${target_src_dir}/)
 	string(RANDOM suffix)
 	set(${duplicate} ${target}_${suffix})
-	add_library(${${duplicate}} STATIC ${target_sources})
+	add_library(${${duplicate}} STATIC ${target_srcs})
 	target_include_directories(${${duplicate}} PUBLIC ${target_includes})
+	if(target_libs)
+		target_link_libraries(${${duplicate}} PRIVATE ${target_libs})
+	endif()
 	target_compile_options(${${duplicate}} PUBLIC -fsanitize=${instrumentation})
 	target_link_options(${${duplicate}} PUBLIC -fsanitize=${instrumentation})
 endmacro()
 
 # Create fuzzing executable for library unter test. Implemented as macro so that
 # it runs in the context of the current directory.
-# ToDo: Asan can't symbolize
 macro(fuzzer_add_target lib_name)
 	# Duplicate libary test target and instrument it.
 	fuzzer_add_instrumented_double(${lib_name} fuzzer,undefined,leak,address lib_double)
