@@ -13,7 +13,7 @@ jobs:
       fail-fast: false
       matrix:
         # List of all fuzzing targets.
-        - target: [buggy_api]
+        target: [buggy_api]
     defaults:
       run:
         shell: bash
