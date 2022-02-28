@@ -28,6 +28,7 @@ function(platform_project_init_hook_impl)
         ${CMAKE_CURRENT_FUNCTION_LIST_DIR}/gpio.c
         ${CMAKE_CURRENT_FUNCTION_LIST_DIR}/i2c.c
     )
+    target_compile_definitions(platform PRIVATE ESP_PLATFORM)
     # Fix: Trigger regeneration of sdkconfig after clean.
     set_property(TARGET platform APPEND PROPERTY
         ADDITIONAL_CLEAN_FILES ${CMAKE_BINARY_DIR}/sdkconfig

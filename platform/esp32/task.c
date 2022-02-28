@@ -58,15 +58,15 @@ int task_create(task_handle_t *task, task_function_t function, void *argument,
     assert(function);
     assert(priority <= configMAX_PRIORITIES);
     assert(stackDepth >= configMINIMAL_STACK_SIZE);
-    if (xTaskCreate(function, NULL, stackDepth, argument, priority, task) !=
-        pdPASS) {
+    if (xTaskCreate(function, NULL, stackDepth, argument, priority,
+                    (TaskHandle_t *)task) != pdPASS) {
         return ENOMEM;
     }
     return 0;
 }
 
 void task_delete(task_handle_t task) {
-    vTaskDelete(task);
+    vTaskDelete((TaskHandle_t)task);
 }
 
 void task_delay(uint32_t ms) {
@@ -84,8 +84,8 @@ uint32_t task_getMs() {
 int task_send(task_handle_t task, uint32_t value, uint32_t msWait) {
     if (xPortInIsrContext()) {
         BaseType_t woken;
-        BaseType_t result =
-            xTaskNotifyFromISR(task, value, eSetValueWithoutOverwrite, &woken);
+        BaseType_t result = xTaskNotifyFromISR(
+            (TaskHandle_t)task, value, eSetValueWithoutOverwrite, &woken);
         portYIELD_FROM_ISR(woken);
         if (result == pdPASS) {
             return 0;
@@ -95,7 +95,8 @@ int task_send(task_handle_t task, uint32_t value, uint32_t msWait) {
     } else {
         TickType_t ticksStart = xTaskGetTickCount();
         do {
-            if (xTaskNotify(task, value, eSetValueWithoutOverwrite) == pdPASS) {
+            if (xTaskNotify((TaskHandle_t)task, value,
+                            eSetValueWithoutOverwrite) == pdPASS) {
                 return 0;
             }
             vTaskDelay(1);
