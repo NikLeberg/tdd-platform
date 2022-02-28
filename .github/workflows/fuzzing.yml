@@ -31,8 +31,10 @@ jobs:
         run: make fuzzing_${{matrix.target}}
 
       - name: 🡇 Download Corpus
-        uses: actions/download-artifact@v2
+        uses: dawidd6/action-download-artifact@v2
         with:
+          workflow: fuzzing.yml
+          workflow_conclusion: completed
           name: fuzzing_${{matrix.target}}_corpus
           path: build/linux/tests/fuzzing/${{matrix.target}}/corpus
         continue-on-error: true
