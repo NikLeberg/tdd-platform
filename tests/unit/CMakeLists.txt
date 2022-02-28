@@ -16,6 +16,17 @@ add_custom_target(
 )
 add_dependencies(tests_unit tests_unit_run)
 
+# Collect coverage after running tests.
+add_custom_command(TARGET tests_unit_run POST_BUILD
+	COMMAND llvm-profdata merge -sparse ./*/*.profraw -o coverage.profdata
+	COMMAND llvm-cov report ./*/unit_* 
+		-show-region-summary=false -show-branch-summary=false
+		-ignore-filename-regex=cmocka.h
+		--instr-profile coverage.profdata
+	WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
+	COMMENT "Collecting unit tests coverage..."
+)
+
 # Create test interface library for propagation of common properties.
 add_library(unit_common INTERFACE)
 target_include_directories(unit_common INTERFACE ${CMAKE_CURRENT_LIST_DIR})
@@ -27,8 +38,14 @@ target_link_libraries(unit_common INTERFACE main cmocka)
 function(unit_add_target lib_name)
 	# Duplicate libary test target and instrument it.
 	test_target_duplicate(${lib_name} lib_double)
-	target_compile_options(${lib_double} PUBLIC -fsanitize=undefined,leak,address)
-	target_link_options(${lib_double} PUBLIC -fsanitize=undefined,leak,address)
+	target_compile_options(${lib_double} PUBLIC
+		-fprofile-instr-generate -fcoverage-mapping
+		-fsanitize=undefined,leak,address
+	)
+	target_link_options(${lib_double} PUBLIC
+		-fprofile-instr-generate
+		-fsanitize=undefined,leak,address
+	)
 	# Create a test executable.
 	set(unit_exe unit_${lib_name})
 	add_executable(${unit_exe} ${lib_name}.c)
