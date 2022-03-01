@@ -22,3 +22,10 @@ endif()
 # A Fake Function Framework for C
 # https://github.com/meekrosoft/fff
 add_subdirectory(fff)
+
+if(PLATFORM_SUPPORTS_SOCKETS)
+    # Mongoose
+    # Embedded Web Server / Embedded Networking Library
+    # https://github.com/cesanta/mongoose
+    add_subdirectory(mongoose)
+endif()
