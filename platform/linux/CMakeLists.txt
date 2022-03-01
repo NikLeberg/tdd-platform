@@ -13,6 +13,7 @@ set(PLATFORM_SUPPORTS_TEST_TARGET ON CACHE BOOL "")
 set(PLATFORM_SUPPORTS_TASKS ON CACHE BOOL "")
 set(PLATFORM_SUPPORTS_GPIO ON CACHE BOOL "")
 set(PLATFORM_SUPPORTS_PERIPH_I2C ON CACHE BOOL "")
+set(PLATFORM_SUPPORTS_SOCKETS ON CACHE BOOL "")
 
 # Implement hook that gets run after project() was called.
 function(platform_project_init_hook_impl)

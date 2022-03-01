@@ -24,6 +24,7 @@
  * - Peripherals:
  *      - I2C - i2c.h
  *      - UART - uart.h
+ * - BSD Sockets - sockets.h
  * If a platform implementation supports such functionality the corresponding
  * CMake option PLATFORM_SUPPORTS_* has to be enabled.
  * Strict parameter assertion is allowed. If a platform implementation is called
@@ -58,6 +59,9 @@
 #endif
 #ifdef PLATFORM_SUPPORTS_PERIPH_UART
 #include "uart.h"
+#endif
+#ifdef PLATFORM_SUPPORTS_SOCKETS
+#include "sockets.h"
 #endif
 
 
