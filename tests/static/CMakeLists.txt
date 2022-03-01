@@ -59,12 +59,13 @@ endif()
 
 # Add target that checks all source code with Cppcheck
 # ToDo: Fail on error
+# ToDo: Does not play nice with carme-m4 platform
 find_program(CLANGTIDY_EXECUTABLE NAMES run-clang-tidy run-clang-tidy-13)
-if(CLANGTIDY_EXECUTABLE)
+if(CLANGTIDY_EXECUTABLE AND NOT PLATFORM STREQUAL "carme-m4")
     add_custom_target(
         static_clangTidy
         COMMAND ${CLANGTIDY_EXECUTABLE} -q -header-filter=.
-        -checks=*,-llvmlibc*,-llvm-header-guard,-llvm-include-order
+        -checks=*,-llvmlibc*,-llvm-header-guard,-llvm-include-order,-altera*
         WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
         COMMENT "Running clang-tidy..."
     )
