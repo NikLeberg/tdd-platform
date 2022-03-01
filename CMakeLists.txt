@@ -20,7 +20,7 @@ platform_project_init_hook()
 add_library(main INTERFACE)
 target_compile_features(main INTERFACE c_std_11)
 target_compile_options(main INTERFACE
-	-W -Wall -Wextra -pedantic -pedantic-errors -Werror
+	-W -Wall -Wextra -Wpedantic -Werror
 )
 target_link_libraries(main INTERFACE platform)
 

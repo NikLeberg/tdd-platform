@@ -18,6 +18,7 @@ set(BUILD_SHARED_LIBS OFF CACHE BOOL "don't build shared libs")
 set(PLATFORM_SUPPORTS_TASKS ON CACHE BOOL "")
 set(PLATFORM_SUPPORTS_GPIO ON CACHE BOOL "")
 set(PLATFORM_SUPPORTS_PERIPH_I2C ON CACHE BOOL "")
+set(PLATFORM_SUPPORTS_SOCKETS ON CACHE BOOL "")
 
 # Implement hook that gets run after project() was called.
 function(platform_project_init_hook_impl)
@@ -43,7 +44,7 @@ function(platform_main_init_hook_impl)
     # of add_subdirectory() but with some additional processing and magic for
     # ESP-IDF build specific build processes.
     idf_build_process(esp32
-        COMPONENTS esp32 freertos esptool_py
+        COMPONENTS esp32 freertos esptool_py lwip
         SDKCONFIG_DEFAULTS ${CMAKE_CURRENT_FUNCTION_LIST_DIR}/sdkconfig.defaults
         SDKCONFIG ${CMAKE_BINARY_DIR}/sdkconfig
         BUILD_DIR ${CMAKE_BINARY_DIR}
@@ -56,6 +57,11 @@ function(platform_main_finish_hook_impl executable_target)
     include($ENV{IDF_PATH}/tools/cmake/idf.cmake)
     # Link idf components to the platform library.
     target_link_libraries(platform PRIVATE idf::esp32 idf::freertos idf::spi_flash)
+    # Lwip is also linked publicly, it provides "sys/socket.h". It has issues
+    # with -Wpedantic and -Wunused-parameter flags, so we need to disable them.
+    # TODO: This changes the flags for all dependent targets!
+    target_link_libraries(platform PUBLIC idf::lwip)
+    target_compile_options(platform PUBLIC -Wno-unused-parameter -Wno-pedantic)
     # Let the build system know what the project executable is to attach more
     # targets, dependencies, etc.
     idf_build_executable(${executable_target})
