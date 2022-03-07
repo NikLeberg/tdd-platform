@@ -26,7 +26,9 @@ target_link_libraries(main INTERFACE platform)
 
 add_subdirectory(lib)
 add_subdirectory(src)
-add_subdirectory(tests EXCLUDE_FROM_ALL)
+if(PLATFORM_SUPPORTS_TEST_TARGET)
+	add_subdirectory(tests EXCLUDE_FROM_ALL)
+endif()
 add_subdirectory(doc)
 
 # Finalize custom platform build system (if any).

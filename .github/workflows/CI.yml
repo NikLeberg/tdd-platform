@@ -11,13 +11,17 @@ jobs:
       matrix:
         include:
           - platform: linux
-            runCommand: make monitor
+            test: make tests -j$(nproc)
+            run: make monitor
           - platform: esp32
-            runCommand: ""
+            test: ""
+            run: ""
           - platform: esp8266
-            runCommand: ""
+            test: ""
+            run: ""
           - platform: carme-m4
-            runCommand: ""
+            test: ""
+            run: ""
     env:
       BASH_ENV: ${{github.workspace}}/platform/${{matrix.platform}}/environment.sh
       # Fix: esp-idf-tool-detection defaults to ~/.espressif but ~ in github
@@ -46,10 +50,11 @@ jobs:
       run: make all -j$(nproc)
 
     - name: 🔍 Tests
+      if: matrix.test
       working-directory: build/${{matrix.platform}}
-      run: make tests -j$(nproc)
+      run: ${{matrix.test}}
 
     - name: 🏃 Run
-      if: ${{matrix.runCommand != ''}}
+      if: matrix.run
       working-directory: build/${{matrix.platform}}
-      run: ${{matrix.runCommand}}
+      run: ${{matrix.run}}
