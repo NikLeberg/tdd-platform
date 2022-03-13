@@ -1,5 +1,5 @@
 /**
- * @file buggy_api.c
+ * @file buggy_api.cc
  * @author NikLeberg (niklaus.leuenb@gmail.com)
  * @brief Fuzzing the buggy_api library
  * @version 0.1
