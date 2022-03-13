@@ -58,15 +58,18 @@ function(symbolic_add_target lib_name)
 	# Target to execute symbolic test.
 	add_custom_target(${sym_exe}_run
 		COMMAND ${WLLVM_BC_EXECUTABLE} ${sym_exe}			# extract bytecode
-		COMMAND ${KLEE_EXECUTABLE} --entry-point=application_main ${sym_exe}.bc # run KLEE
-		COMMAND ${KLEE_TEST_EXECUTABLE} ./klee-last/*.ktest # generated tests
+		COMMAND ${KLEE_EXECUTABLE}							# run KLEE
+			--entry-point=application_main
+			--only-output-states-covering-new
+			${sym_exe}.bc 
+		# COMMAND ls ./klee-last/								# list files
+		# COMMAND ${KLEE_TEST_EXECUTABLE} ./klee-last/*.ktest # generated tests
 		COMMAND cat ./klee-last/*.err || true 				# found errors
 		COMMAND ${KLEE_STATS_EXECUTABLE} ./klee-last 		# print stats
 		WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
 		DEPENDS ${sym_exe}
 		BYPRODUCTS
 			${CMAKE_CURRENT_BINARY_DIR}/${sym_exe}.bc
-			${CMAKE_CURRENT_BINARY_DIR}/klee-*/
 	)
 endfunction()
 

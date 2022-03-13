@@ -20,6 +20,23 @@
 
 
 /*
+ * Type declarations
+ *
+ */
+
+#define NUM_CALLS (8U) // How many subsequent APIs are called at maximum.
+#define NUM_APIS (3U)  // How many APIs there are.
+
+
+/*
+ * Variable declarations
+ *
+ */
+
+/* ... */
+
+
+/*
  * Private Functions
  *
  */
@@ -38,13 +55,22 @@
  * @return int always 0
  */
 int application_main(void) {
-    int state_1 = 0;
-    klee_make_symbolic(&state_1, sizeof(state_1), "state 1");
-    buggy_api_setState(state_1);
-    int state_2 = 0;
-    klee_make_symbolic(&state_2, sizeof(state_2), "state 2");
-    buggy_api_setState2(state_2);
-    buggy_api_run();
+    for (int i = 0; i < NUM_CALLS; ++i) {
+        int f_select = klee_choose(NUM_APIS);
+        if (f_select == 0) {
+            int state_1 = 0;
+            klee_make_symbolic(&state_1, sizeof(state_1), "state 1");
+            buggy_api_setState(state_1);
+        }
+        if (f_select == 1) {
+            int state_2 = 0;
+            klee_make_symbolic(&state_2, sizeof(state_2), "state 2");
+            buggy_api_setState2(state_2);
+        }
+        if (f_select == 2) {
+            buggy_api_run();
+        }
+    }
 
     return 0;
 }
