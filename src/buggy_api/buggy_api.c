@@ -53,7 +53,7 @@ static int g_state2;
 
 void buggy_api_setState(int state) {
     // set global state
-    if (g_state2 == 666) {
+    if (g_state2 == 666 || state == 0) {
         g_state = state;
     }
 }
