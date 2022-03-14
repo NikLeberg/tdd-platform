@@ -37,7 +37,7 @@ jobs:
       run: make all -j$(nproc)
 
     - name: 🔍 Tests
-      if: matrix.platform == "linux"
+      if: matrix.platform == 'linux'
       working-directory: build/${{matrix.platform}}
       run: make tests -j$(nproc)
       env:
@@ -45,12 +45,12 @@ jobs:
         CMOCKA_XML_FILE: "result_%g.xml"
 
     - name: 🎯 Upload Results
-      if: matrix.platform == "linux"
+      if: matrix.platform == 'linux'
       uses: mikepenz/action-junit-report@v2
       with:
         report_paths: build/${{matrix.platform}}/tests/unit/**/*.xml
 
     - name: 🏃 Run
-      if: matrix.platform == "linux"
+      if: matrix.platform == 'linux'
       working-directory: build/${{matrix.platform}}
       run: make monitor
