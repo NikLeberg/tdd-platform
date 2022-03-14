@@ -62,7 +62,15 @@ jobs:
           path: |
             build/linux/tests/fuzzing/${{matrix.target}}/fuzzing_*
             build/linux/tests/fuzzing/${{matrix.target}}/crash-*
-  
+
+      - name: 💥 Crashed?
+        working-directory: build/linux/tests/fuzzing/${{matrix.target}}
+        run: |
+          if [ -f crash-* ]; then
+            echo "Fuzzer found a input that crashes the program. Failing CI job."
+            false
+          fi
+
   symbolic:
     runs-on: ubuntu-latest
     container: ghcr.io/nikleberg/tdd-platform:latest
@@ -98,4 +106,12 @@ jobs:
           name: symbolic_${{matrix.target}}_results
           path: |
             build/linux/tests/symbolic/${{matrix.target}}/symbolic_*
-            build/linux/tests/fuzzing/${{matrix.target}}/klee-last/*
+            build/linux/tests/symbolic/${{matrix.target}}/klee-last/*
+
+      - name: 💥 Failed?
+        working-directory: build/linux/tests/symbolic/${{matrix.target}}/klee-last
+        run: |
+          if [ -f test*.err ]; then
+            echo "At least one error has been encountered. Failing CI job."
+            false
+          fi
