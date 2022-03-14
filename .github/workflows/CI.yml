@@ -9,19 +9,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        include:
-          - platform: linux
-            test: make tests -j$(nproc)
-            run: make monitor
-          - platform: esp32
-            test: ""
-            run: ""
-          - platform: esp8266
-            test: ""
-            run: ""
-          - platform: carme-m4
-            test: ""
-            run: ""
+        platform: [linux, esp32, esp8266, carme-m4]
     env:
       BASH_ENV: ${{github.workspace}}/platform/${{matrix.platform}}/environment.sh
       # Fix: esp-idf-tool-detection defaults to ~/.espressif but ~ in github
@@ -46,15 +34,23 @@ jobs:
       run: cmake -S . -B build/${{matrix.platform}} -DPLATFORM=${{matrix.platform}}
 
     - name: 🏗️ Build
-      working-directory: build/${{matrix.platform}}
       run: make all -j$(nproc)
 
     - name: 🔍 Tests
-      if: matrix.test
+      if: matrix.platform == linux
       working-directory: build/${{matrix.platform}}
-      run: ${{matrix.test}}
+      run: make tests -j$(nproc)
+      env:
+        CMOCKA_MESSAGE_OUTPUT: "STANDARD,XML"
+        CMOCKA_XML_FILE: "result_%g.xml"
+
+    - name: 🎯 Upload Results
+      if: matrix.platform == linux
+      uses: mikepenz/action-junit-report@v2
+      with:
+        report_paths: build/${{matrix.platform}}/tests/unit/**/*.xml
 
     - name: 🏃 Run
-      if: matrix.run
+      if: matrix.platform == linux
       working-directory: build/${{matrix.platform}}
-      run: ${{matrix.run}}
+      run: make monitor
