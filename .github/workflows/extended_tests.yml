@@ -43,21 +43,19 @@ jobs:
         working-directory: build/linux
         run: make fuzzing_${{matrix.target}}_run
         timeout-minutes: 330 # 5h30min
+        continue-on-error: true
 
       - name: 🗜 Merge Corpus
-        if: always()
         working-directory: build/linux
         run: make fuzzing_${{matrix.target}}_merge
 
       - name: 🡅 Upload Corpus
-        if: always()
         uses: actions/upload-artifact@v2
         with:
           name: fuzzing_${{matrix.target}}_corpus
           path: build/linux/tests/fuzzing/${{matrix.target}}/merged
 
       - name: 🎯 Upload Crash
-        if: always()
         uses: actions/upload-artifact@v2
         with:
           name: fuzzing_${{matrix.target}}_crash
@@ -95,7 +93,6 @@ jobs:
         timeout-minutes: 330 # 5h30min
 
       - name: 🎯 Upload Results
-        if: always()
         uses: actions/upload-artifact@v2
         with:
           name: symbolic_${{matrix.target}}_results
