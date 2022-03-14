@@ -34,6 +34,7 @@ jobs:
       run: cmake -S . -B build/${{matrix.platform}} -DPLATFORM=${{matrix.platform}}
 
     - name: 🏗️ Build
+      working-directory: build/${{matrix.platform}}
       run: make all -j$(nproc)
 
     - name: 🔍 Tests
