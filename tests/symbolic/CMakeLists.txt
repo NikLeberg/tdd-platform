@@ -10,8 +10,8 @@ find_library(KLEE_LIB libkleeRuntest.so)
 find_program(KLEE_TEST_EXECUTABLE ktest-tool)
 find_program(KLEE_STATS_EXECUTABLE klee-stats)
 if(NOT KLEE_EXECUTABLE OR NOT KLEE_INCLUDE OR NOT KLEE_LIB)
-	# Without KLEE, symbolic execution cant be done.
-	return()
+    # Without KLEE, symbolic execution cant be done.
+    return()
 endif()
 
 # Find wllvm to extract bytecode from executable.
@@ -19,55 +19,55 @@ find_program(WLLVM_C_EXECUTABLE wllvm)
 find_program(WLLVM_CXX_EXECUTABLE wllvm++)
 find_program(WLLVM_BC_EXECUTABLE extract-bc)
 if(NOT WLLVM_C_EXECUTABLE OR NOT WLLVM_CXX_EXECUTABLE OR NOT WLLVM_BC_EXECUTABLE)
-	# Without wllvm, llvm bytecode neccessary for KLEE cant be extracted.
-	return()
+    # Without wllvm, llvm bytecode neccessary for KLEE cant be extracted.
+    return()
 endif()
 
 # Create interface library for propagation of common properties.
 add_library(symbolic_common INTERFACE)
 target_include_directories(symbolic_common INTERFACE
-	${CMAKE_CURRENT_LIST_DIR}
-	${KLEE_INCLUDE}
+    ${CMAKE_CURRENT_LIST_DIR}
+    ${KLEE_INCLUDE}
 )
 target_compile_options(symbolic_common INTERFACE
-	-g # include debug information so KLEE can show function names
-	-O0 -Xclang -disable-O0-optnone # enable KLEE to optimize
-	-Wno-unused-command-line-argument # ignore warning from wllvm wrapper
+    -g # include debug information so KLEE can show function names
+    -O0 -Xclang -disable-O0-optnone # enable KLEE to optimize
+    -Wno-unused-command-line-argument # ignore warning from wllvm wrapper
 )
 #target_link_options(symbolic_common INTERFACE -g)
 target_link_libraries(symbolic_common INTERFACE
-	platform
-	${KLEE_LIB}
+    platform
+    ${KLEE_LIB}
 )
 
 # Create LLVM bytecode for library under test and add KLEE target that runs it.
 function(symbolic_add_target lib_name)
-	# Duplicate libary test target.
-	test_target_duplicate(${lib_name} lib_double)
-	target_link_libraries(${lib_double} PRIVATE symbolic_common)
-	# Create a executable.
-	set(sym_exe symbolic_${lib_name})
-	add_executable(${sym_exe} ${lib_name}.c)
-	target_link_libraries(${sym_exe} PRIVATE symbolic_common ${lib_double})
-	add_dependencies(tests_symbolic ${sym_exe})
-	# Set wllvm as compiler wrapper so llvm bytecode can be extracted later.
-	set_target_properties(${sym_exe} ${lib_double} PROPERTIES
-		C_COMPILER_LAUNCHER "LLVM_COMPILER=clang;${WLLVM_C_EXECUTABLE}"
-    	CXX_COMPILER_LAUNCHER "LLVM_COMPILER=clang;${WLLVM_CXX_EXECUTABLE}"
-	)
-	# Target to execute symbolic test.
-	add_custom_target(${sym_exe}_run
-		COMMAND ${WLLVM_BC_EXECUTABLE} ${sym_exe}			# extract bytecode
-		COMMAND ${CMAKE_CURRENT_FUNCTION_LIST_DIR}/klee-runner.sh # run KLEE
-			${KLEE_EXECUTABLE} ${KLEE_STATS_EXECUTABLE} ${sym_exe}.bc
-		# COMMAND ls ./klee-last/								# list files
-		# COMMAND ${KLEE_TEST_EXECUTABLE} ./klee-last/*.ktest # generated tests
-		COMMAND cat ./klee-last/*.err || true 				# found errors
-		WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
-		DEPENDS ${sym_exe}
-		BYPRODUCTS
-			${CMAKE_CURRENT_BINARY_DIR}/${sym_exe}.bc
-	)
+    # Duplicate libary test target.
+    test_target_duplicate(${lib_name} lib_double)
+    target_link_libraries(${lib_double} PRIVATE symbolic_common)
+    # Create a executable.
+    set(sym_exe symbolic_${lib_name})
+    add_executable(${sym_exe} ${lib_name}.c)
+    target_link_libraries(${sym_exe} PRIVATE symbolic_common ${lib_double})
+    add_dependencies(tests_symbolic ${sym_exe})
+    # Set wllvm as compiler wrapper so llvm bytecode can be extracted later.
+    set_target_properties(${sym_exe} ${lib_double} PROPERTIES
+        C_COMPILER_LAUNCHER "LLVM_COMPILER=clang;${WLLVM_C_EXECUTABLE}"
+        CXX_COMPILER_LAUNCHER "LLVM_COMPILER=clang;${WLLVM_CXX_EXECUTABLE}"
+    )
+    # Target to execute symbolic test.
+    add_custom_target(${sym_exe}_run
+        COMMAND ${WLLVM_BC_EXECUTABLE} ${sym_exe}			# extract bytecode
+        COMMAND ${CMAKE_CURRENT_FUNCTION_LIST_DIR}/klee-runner.sh # run KLEE
+            ${KLEE_EXECUTABLE} ${KLEE_STATS_EXECUTABLE} ${sym_exe}.bc
+        # COMMAND ls ./klee-last/								# list files
+        # COMMAND ${KLEE_TEST_EXECUTABLE} ./klee-last/*.ktest # generated tests
+        COMMAND cat ./klee-last/*.err || true 				# found errors
+        WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
+        DEPENDS ${sym_exe}
+        BYPRODUCTS
+            ${CMAKE_CURRENT_BINARY_DIR}/${sym_exe}.bc
+    )
 endfunction()
 
 # Add subdirectories of symbolic executors for different targets. They are
