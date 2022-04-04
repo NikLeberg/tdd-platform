@@ -89,4 +89,3 @@ endfunction()
 # <name>.cc file and optionally a <name>.proto file. If a seeds folder exists it
 # is also used a seed input for libFuzzer.
 add_subdirectory(buggy_api)
-add_subdirectory(playground)
