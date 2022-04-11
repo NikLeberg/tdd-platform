@@ -50,13 +50,13 @@ jobs:
         run: make fuzzing_${{matrix.target}}_merge
 
       - name: 🡅 Upload Corpus
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v3
         with:
           name: fuzzing_${{matrix.target}}_corpus
           path: build/linux/tests/fuzzing/${{matrix.target}}/merged
 
       - name: 🎯 Upload Crash
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v3
         with:
           name: fuzzing_${{matrix.target}}_crash
           path: |
@@ -101,7 +101,7 @@ jobs:
         timeout-minutes: 330 # 5h30min
 
       - name: 🎯 Upload Results
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v3
         with:
           name: symbolic_${{matrix.target}}_results
           path: |
