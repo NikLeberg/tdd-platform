@@ -1,0 +1,24 @@
+struct_buggy_api:
+  type: struct
+  name: buggy_api
+  c_headers: [buggy_api/buggy_api.h, fuzzing.h, buggy_api/dummy.h]
+  methods:
+  - buggy_api():
+      outputs: [buggy_api]
+      exec: |
+        // reset state
+        buggy_api_setState(0);
+  - ~buggy_api():
+      inputs: [buggy_api]
+      exec: |
+        // pass
+  # static_methods:
+  - void buggy_api_setState(int state):
+      inputs: [buggy_api]
+      args: [int]
+      exec: |
+        buggy_api_setState($a0);
+  - void buggy_api_run():
+      inputs: [buggy_api]
+      exec: |
+        buggy_api_run();
