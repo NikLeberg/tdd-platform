@@ -42,5 +42,5 @@
  */
 
 void buggy_api_setState(int state);
-void buggy_api_setState2(int state);
+// void buggy_api_setState2(int state);
 void buggy_api_run(void);

@@ -35,7 +35,7 @@
  */
 
 static int g_state;
-static int g_state2;
+// static int g_state2;
 
 
 /*
@@ -53,21 +53,21 @@ static int g_state2;
 
 void buggy_api_setState(int state) {
     // set global state
-    if (g_state2 == 666 || state == 0) {
+    if (/* g_state2 == 666 || */ state == 0) {
         g_state = state;
     }
 }
 
-void buggy_api_setState2(int state) {
-    // set global state
-    g_state2 = state;
-}
+// void buggy_api_setState2(int state) {
+//     // set global state
+//     g_state2 = state;
+// }
 
 void buggy_api_run(void) {
     if (g_state == 123) {
-        if (g_state2 == 321) {
-            assert(0);
-        }
+        // if (g_state2 == 321) {
+        assert(0);
+        // }
     }
 }
 
