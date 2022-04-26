@@ -12,13 +12,14 @@ struct_buggy_api:
       inputs: [buggy_api]
       exec: |
         // pass
-  # static_methods:
   - void buggy_api_setState(int state):
       inputs: [buggy_api]
       args: [int]
+      outputs: [buggy_api]
       exec: |
         buggy_api_setState($a0);
   - void buggy_api_run():
       inputs: [buggy_api]
+      outputs: [buggy_api]
       exec: |
         buggy_api_run();
