@@ -77,6 +77,7 @@ function(fuzzer_add_target lib_name)
             COMMENT "Generating GraphFuzz fuzzer harness and writer for ${lib_name}."
         )
         target_sources(${fuzz_exe} PRIVATE ${CMAKE_CURRENT_BINARY_DIR}/fuzz_exec.cpp)
+        target_include_directories(${fuzz_exe} PRIVATE ${CMAKE_CURRENT_SOURCE_DIR})
         # Add writer executable.
         # ToDo: Fix missing application_main in writer executable
         #file(APPEND ${CMAKE_CURRENT_BINARY_DIR}/fuzz_write.cpp "extern \"C\" {\n#include \"fuzzing.h\"\n}")
