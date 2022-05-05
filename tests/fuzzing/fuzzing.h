@@ -25,7 +25,13 @@
  *
  */
 
-/* ... */
+/**
+ * @brief Dummy global context for modelling global APIs with GraphFuzz.
+ *
+ */
+typedef struct {
+    int dummy;
+} globalContext;
 
 
 /*

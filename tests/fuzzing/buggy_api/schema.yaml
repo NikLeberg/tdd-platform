@@ -1,16 +1,31 @@
-config:
-  type: config
-  # Invoked before every test case. Reset global state so each test case is
-  # deterministic.
-  initializer: |
-    buggy_api_setState(0);
-
-struct_GlobalContext:
+struct_buggy_api:
   type: struct
-  name: GlobalContext
-  headers: [api_helper.h]
+  name: globalContext # use dummy context
+  c_headers: [buggy_api/buggy_api.h, fuzzing.h]
   methods:
-  - GlobalContext();
-  - ~GlobalContext();
-  - void _run();
-  - void _setState(int state);
+  - globalContext():
+      outputs: [globalContext]
+      exec: |
+        // reset state
+        buggy_api_setState(0);
+  - ~globalContext():
+      inputs: [globalContext]
+      exec: |
+        // pass
+  - void buggy_api_setState(int state):
+      inputs: [globalContext]
+      args: [int]
+      outputs: [globalContext]
+      exec: |
+        buggy_api_setState($a0);
+  - void buggy_api_setState2(int state):
+      inputs: [globalContext]
+      args: [int]
+      outputs: [globalContext]
+      exec: |
+        buggy_api_setState2($a0);
+  - void buggy_api_run():
+      inputs: [globalContext]
+      outputs: [globalContext]
+      exec: |
+        buggy_api_run();
