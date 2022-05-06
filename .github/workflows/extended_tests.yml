@@ -13,7 +13,7 @@ jobs:
       fail-fast: false
       matrix:
         # List of all fuzzing targets.
-        target: [buggy_api]
+        target: [buggy_api_proto, buggy_api_graphfuzz]
     defaults:
       run:
         shell: bash
@@ -33,7 +33,7 @@ jobs:
       - name: 🡇 Download Corpus
         uses: dawidd6/action-download-artifact@v2
         with:
-          workflow: fuzzing.yml
+          workflow: extended_tests.yml
           workflow_conclusion: completed
           name: fuzzing_${{matrix.target}}_corpus
           path: build/linux/tests/fuzzing/${{matrix.target}}/corpus
