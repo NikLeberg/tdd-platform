@@ -132,7 +132,7 @@ function(fuzzer_add_target fuzzer_name lib_name)
     # representation in code representation.
     if(graphfuzz_extra)
         add_custom_command(TARGET ${fuzzer_name}_run POST_BUILD
-            COMMAND ./${fuzzer_name}_writer ./crash-* | tee ./crash-code.cc
+            COMMAND ./${fuzzer_name}_writer ./crash-* | tee ./fuzzing_reproduce.cc
             DEPENDS ${fuzzer_name}_writer
             WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
         )
@@ -162,3 +162,5 @@ endfunction()
 # If a seeds folder exists it is used as seed input for libFuzzer.
 add_subdirectory(buggy_api_graphfuzz)
 add_subdirectory(buggy_api_proto)
+add_subdirectory(playground)
+add_subdirectory(mylib)
