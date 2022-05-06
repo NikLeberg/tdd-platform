@@ -101,10 +101,10 @@ function(fuzzer_add_target fuzzer_name lib_name)
         target_include_directories(${fuzzer_name} PRIVATE ${CMAKE_CURRENT_SOURCE_DIR})
         target_link_libraries(${fuzzer_name} PRIVATE fuzzing_graphfuzz)
         # Add writer executable.
-        # ToDo: Fix missing application_main in writer executable
-        #file(APPEND ${CMAKE_CURRENT_BINARY_DIR}/fuzz_write.cpp "extern \"C\" {\n#include \"fuzzing.h\"\n}")
-        #add_executable(${fuzzer_name}_writer ${CMAKE_CURRENT_BINARY_DIR}/fuzz_write.cpp)
-        #target_link_libraries(${fuzzer_name}_writer PRIVATE fuzzing_common ${lib_double})
+        add_executable(${fuzzer_name}_writer ${CMAKE_CURRENT_BINARY_DIR}/fuzz_write.cpp)
+        target_link_libraries(${fuzzer_name}_writer PRIVATE fuzzing_graphfuzz ${lib_double})
+        # Run writer after fuzzing, for this enable additional custom command.
+        set(graphfuzz_extra 1)
     else()
         # Otherwise just try to add a normal libFuzzer target.
         target_sources(${fuzzer_name} PRIVATE ${lib_name}.cc)
@@ -122,12 +122,21 @@ function(fuzzer_add_target fuzzer_name lib_name)
     # Target to run fuzzer.
     add_custom_target(${fuzzer_name}_run
         COMMAND ./${fuzzer_name}
-            -use_value_profile=1 ./corpus ${seed_dir}
+            -use_value_profile=1 ./corpus ${seed_dir} || true # never fail
         WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
         DEPENDS ${fuzzer_name}
         BYPRODUCTS
             ${CMAKE_CURRENT_BINARY_DIR}/corpus
     )
+    # Run additional step if this is a GraphFuzz harness. Converts graph
+    # representation in code representation.
+    if(graphfuzz_extra)
+        add_custom_command(TARGET ${fuzzer_name}_run POST_BUILD
+            COMMAND ./${fuzzer_name}_writer ./crash-* | tee ./crash-code.cc
+            DEPENDS ${fuzzer_name}_writer
+            WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
+        )
+    endif()
     # Target to merge fuzzer corpus.
     add_custom_target(${fuzzer_name}_merge
         COMMAND ./${fuzzer_name}
