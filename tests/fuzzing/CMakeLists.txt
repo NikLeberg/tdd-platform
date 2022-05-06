@@ -162,5 +162,3 @@ endfunction()
 # If a seeds folder exists it is used as seed input for libFuzzer.
 add_subdirectory(buggy_api_graphfuzz)
 add_subdirectory(buggy_api_proto)
-add_subdirectory(playground)
-add_subdirectory(mylib)
