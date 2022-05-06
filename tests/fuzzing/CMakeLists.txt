@@ -152,3 +152,4 @@ endfunction()
 # The type of harness is automatically infered from the available files.
 # If a seeds folder exists it is used as seed input for libFuzzer.
 add_subdirectory(buggy_api_graphfuzz)
+add_subdirectory(buggy_api_proto)
