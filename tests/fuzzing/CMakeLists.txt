@@ -20,51 +20,72 @@ include(FindProtobuf)
 find_package(Protobuf)
 find_package(libprotobuf-mutator)
 if(NOT Protobuf_FOUND OR NOT libprotobuf-mutator_FOUND)
-    # Without those packages fuzzing cant be done.
-    return()
-    # ToDo: make optional
+    set(HAVE_PROTOBUF 0)
+    message(WARNING "Can't find protobuf!")
+else()
+    set(HAVE_PROTOBUF 1)
+    add_library(fuzzing_protobuf INTERFACE)
+    target_include_directories(fuzzing_protobuf INTERFACE ${PROTOBUF_INCLUDE_DIR})
+    target_compile_options(fuzzing_protobuf INTERFACE -fsanitize=fuzzer)
+    target_link_options(fuzzing_protobuf INTERFACE -fsanitize=fuzzer)
+    target_link_libraries(fuzzing_protobuf INTERFACE ${Protobuf_LIBRARIES})
+endif()
+
+# Find libprotobuf-mutator for structure aware fuzzing.
+find_package(libprotobuf-mutator)
+if(NOT HAVE_PROTOBUF OR NOT libprotobuf-mutator_FOUND)
+    set(HAVE_PROTOBUF-MUTATOR 0)
+    message(WARNING "Can't find libprotobuf-mutator!")
+else()
+    set(HAVE_PROTOBUF-MUTATOR 1)
+    add_library(fuzzing_protobuf-mutator INTERFACE)
+    target_link_libraries(fuzzing_protobuf-mutator INTERFACE
+        fuzzing_protobuf
+        libprotobuf-mutator::protobuf-mutator
+        libprotobuf-mutator::protobuf-mutator-libfuzzer
+    )
 endif()
 
 # Find GraphFuzz executable and its library for structure aware fuzzing.
 find_program(GFUZZ_EXECUTABLE gfuzz)
 find_library(GFUZZ_LIB graphfuzz)
-if(NOT GFUZZ_EXECUTABLE OR NOT GFUZZ_LIB)
-    # Without GraphFuzz, fuzzing cant be done.
-    return()
-    # ToDo: make optional
+if(NOT HAVE_PROTOBUF OR NOT GFUZZ_EXECUTABLE OR NOT GFUZZ_LIB)
+    set(HAVE_GRAPHFUZZ 0)
+    message(WARNING "Can't find GraphFuzz!")
+else()
+    set(HAVE_GRAPHFUZZ 1)
+    add_library(fuzzing_graphfuzz INTERFACE)
+    target_link_libraries(fuzzing_graphfuzz INTERFACE
+        fuzzing_protobuf
+        ${GFUZZ_LIB}
+    )
 endif()
 
 # Create test interface library for propagation of common properties.
 add_library(fuzzing_common INTERFACE)
 target_include_directories(fuzzing_common INTERFACE
     ${CMAKE_CURRENT_LIST_DIR}
-    ${PROTOBUF_INCLUDE_DIR}
 )
 target_compile_options(fuzzing_common INTERFACE -fsanitize=fuzzer)
 target_link_options(fuzzing_common INTERFACE -fsanitize=fuzzer)
-target_link_libraries(fuzzing_common INTERFACE
-    platform
-    ${Protobuf_LIBRARIES}
-    libprotobuf-mutator::protobuf-mutator
-    libprotobuf-mutator::protobuf-mutator-libfuzzer
-    ${GFUZZ_LIB}
-)
+target_link_libraries(fuzzing_common INTERFACE platform)
 
 # Create fuzzing executable for library unter test.
-function(fuzzer_add_target lib_name)
-    # Duplicate libary test target and instrument it.
+function(fuzzer_add_target fuzzer_name lib_name)
+    # Duplicate library test target and instrument it.
     test_target_duplicate(${lib_name} lib_double)
     target_compile_options(${lib_double} PUBLIC -fsanitize=fuzzer,undefined,leak,address)
     target_link_options(${lib_double} PUBLIC -fsanitize=fuzzer,undefined,leak,address)
     # Create a fuzzer executable.
-    set(fuzz_exe fuzzing_${lib_name})
-    add_executable(${fuzz_exe})
-    if(EXISTS ${CMAKE_CURRENT_SOURCE_DIR}/${lib_name}.proto)
+    add_executable(${fuzzer_name})
+    # Determine what type of harness to generate/use.
+    if(HAVE_PROTOBUF-MUTATOR AND EXISTS ${CMAKE_CURRENT_SOURCE_DIR}/${lib_name}.proto)
         # If a protobuf file is present, compile and add it.
         protobuf_generate_cpp(proto_src proto_hdr ${lib_name}.proto)
-        target_sources(${fuzz_exe} PRIVATE ${proto_src} ${proto_hdr})
-        target_include_directories(${fuzz_exe} PRIVATE ${CMAKE_CURRENT_BINARY_DIR})
-    elseif(EXISTS ${CMAKE_CURRENT_SOURCE_DIR}/schema.yaml)
+        target_sources(${fuzzer_name} PRIVATE ${lib_name}.cc ${proto_src} ${proto_hdr})
+        target_include_directories(${fuzzer_name} PRIVATE ${CMAKE_CURRENT_BINARY_DIR})
+        target_link_libraries(${fuzzer_name} PRIVATE fuzzing_protobuf-mutator)
+    elseif(HAVE_GRAPHFUZZ AND EXISTS ${CMAKE_CURRENT_SOURCE_DIR}/schema.yaml)
         # If a schema.yaml file is present, generate the fuzzer harness and add
         # the files to the fuzzer executable.
         add_custom_command(
@@ -76,19 +97,20 @@ function(fuzzer_add_target lib_name)
             WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
             COMMENT "Generating GraphFuzz fuzzer harness and writer for ${lib_name}."
         )
-        target_sources(${fuzz_exe} PRIVATE ${CMAKE_CURRENT_BINARY_DIR}/fuzz_exec.cpp)
-        target_include_directories(${fuzz_exe} PRIVATE ${CMAKE_CURRENT_SOURCE_DIR})
+        target_sources(${fuzzer_name} PRIVATE ${CMAKE_CURRENT_BINARY_DIR}/fuzz_exec.cpp)
+        target_include_directories(${fuzzer_name} PRIVATE ${CMAKE_CURRENT_SOURCE_DIR})
+        target_link_libraries(${fuzzer_name} PRIVATE fuzzing_graphfuzz)
         # Add writer executable.
         # ToDo: Fix missing application_main in writer executable
         #file(APPEND ${CMAKE_CURRENT_BINARY_DIR}/fuzz_write.cpp "extern \"C\" {\n#include \"fuzzing.h\"\n}")
-        #add_executable(${fuzz_exe}_writer ${CMAKE_CURRENT_BINARY_DIR}/fuzz_write.cpp)
-        #target_link_libraries(${fuzz_exe}_writer PRIVATE fuzzing_common ${lib_double})
+        #add_executable(${fuzzer_name}_writer ${CMAKE_CURRENT_BINARY_DIR}/fuzz_write.cpp)
+        #target_link_libraries(${fuzzer_name}_writer PRIVATE fuzzing_common ${lib_double})
     else()
         # Otherwise just try to add a normal libFuzzer target.
-        target_sources(${fuzz_exe} PRIVATE ${lib_name}.cc)
+        target_sources(${fuzzer_name} PRIVATE ${lib_name}.cc)
     endif()
-    target_link_libraries(${fuzz_exe} PRIVATE fuzzing_common ${lib_double})
-    add_dependencies(tests_fuzzing ${fuzz_exe})
+    target_link_libraries(${fuzzer_name} PRIVATE fuzzing_common ${lib_double})
+    add_dependencies(tests_fuzzing ${fuzzer_name})
     # Create paths for the fuzzing process.
     file(MAKE_DIRECTORY
         ${CMAKE_CURRENT_BINARY_DIR}/corpus
@@ -98,20 +120,20 @@ function(fuzzer_add_target lib_name)
         set(seed_dir ${CMAKE_CURRENT_SOURCE_DIR}/seeds)
     endif()
     # Target to run fuzzer.
-    add_custom_target(${fuzz_exe}_run
-        COMMAND ./${fuzz_exe}
+    add_custom_target(${fuzzer_name}_run
+        COMMAND ./${fuzzer_name}
             -use_value_profile=1 ./corpus ${seed_dir}
         WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
-        DEPENDS ${fuzz_exe}
+        DEPENDS ${fuzzer_name}
         BYPRODUCTS
             ${CMAKE_CURRENT_BINARY_DIR}/corpus
     )
     # Target to merge fuzzer corpus.
-    add_custom_target(${fuzz_exe}_merge
-        COMMAND ./${fuzz_exe}
+    add_custom_target(${fuzzer_name}_merge
+        COMMAND ./${fuzzer_name}
             -merge=1 ./merged ./corpus
         WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
-        DEPENDS ${fuzz_exe}
+        DEPENDS ${fuzzer_name}
         BYPRODUCTS
             ${CMAKE_CURRENT_BINARY_DIR}/merged
     )
@@ -129,4 +151,4 @@ endfunction()
 #       provide schema.yaml with API endpoint definitions
 # The type of harness is automatically infered from the available files.
 # If a seeds folder exists it is used as seed input for libFuzzer.
-add_subdirectory(buggy_api)
+add_subdirectory(buggy_api_graphfuzz)
