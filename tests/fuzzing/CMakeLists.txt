@@ -136,6 +136,7 @@ function(fuzzer_add_target fuzzer_name lib_name)
             DEPENDS ${fuzzer_name}_writer
             WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
         )
+        add_dependencies(${fuzzer_name}_run ${fuzzer_name}_writer)
     endif()
     # Target to merge fuzzer corpus.
     add_custom_target(${fuzzer_name}_merge
