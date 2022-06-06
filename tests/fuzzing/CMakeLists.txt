@@ -128,13 +128,15 @@ function(fuzzer_add_target fuzzer_name lib_name)
         BYPRODUCTS
             ${CMAKE_CURRENT_BINARY_DIR}/corpus
     )
-    # Run additional step if this is a GraphFuzz harness. Converts graph
-    # representation in code representation.
+    # Run additional step if this is a GraphFuzz harness. Minimizes crash and
+    # then converts graph representation to code representation.
     if(graphfuzz_extra)
         add_custom_command(TARGET ${fuzzer_name}_run POST_BUILD
-            COMMAND ./${fuzzer_name}_writer ./crash-* | tee ./fuzzing_reproduce.cc
+            COMMAND ${GFUZZ_EXECUTABLE} min ./${fuzzer_name} ./crash-*
+            COMMAND ./${fuzzer_name}_writer ./crash-*.min | tee ./crash-code.cc
             DEPENDS ${fuzzer_name}_writer
             WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
+            COMMENT "Minimizing crash and converting graph to code representation."
         )
         add_dependencies(${fuzzer_name}_run ${fuzzer_name}_writer)
     endif()
