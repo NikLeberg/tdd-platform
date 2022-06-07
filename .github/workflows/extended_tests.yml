@@ -61,12 +61,12 @@ jobs:
           name: fuzzing_${{matrix.target}}_crash
           path: |
             build/linux/tests/fuzzing/${{matrix.target}}/fuzzing_*
-            build/linux/tests/fuzzing/${{matrix.target}}/crash-*
+            build/linux/tests/fuzzing/${{matrix.target}}/crash*
 
       - name: 💥 Crashed?
         working-directory: build/linux/tests/fuzzing/${{matrix.target}}
         run: |
-          if [ -f crash-* ]; then
+          if [ -f crash ]; then
             echo "Fuzzer found a input that crashes the program. Failing CI job."
             false
           fi
@@ -111,7 +111,7 @@ jobs:
       - name: 💥 Failed?
         working-directory: build/linux/tests/symbolic/${{matrix.target}}/klee-last
         run: |
-          if [ -f test*.err ]; then
+          if ls test*.err 1>/dev/null 2>&1; then
             echo "At least one error has been encountered. Failing CI job."
             false
           fi

@@ -122,7 +122,8 @@ function(fuzzer_add_target fuzzer_name lib_name)
     # Target to run fuzzer.
     add_custom_target(${fuzzer_name}_run
         COMMAND ./${fuzzer_name}
-            -use_value_profile=1 ./corpus ${seed_dir} || true # never fail
+            -use_value_profile=1 ./corpus ${seed_dir}
+            -exact_artifact_path=./crash || true # never fail
         WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
         DEPENDS ${fuzzer_name}
         BYPRODUCTS
@@ -132,8 +133,8 @@ function(fuzzer_add_target fuzzer_name lib_name)
     # then converts graph representation to code representation.
     if(graphfuzz_extra)
         add_custom_command(TARGET ${fuzzer_name}_run POST_BUILD
-            COMMAND ${GFUZZ_EXECUTABLE} min ./${fuzzer_name} ./crash-*
-            COMMAND ./${fuzzer_name}_writer ./crash-*.min | tee ./fuzzing_reproduce.cc
+            COMMAND ${GFUZZ_EXECUTABLE} min ./${fuzzer_name} ./crash
+            COMMAND ./${fuzzer_name}_writer ./crash.min | tee ./crash.cc
             DEPENDS ${fuzzer_name}_writer
             WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
             COMMENT "Minimizing crash and converting graph to code representation."
