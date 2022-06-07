@@ -133,7 +133,7 @@ function(fuzzer_add_target fuzzer_name lib_name)
     if(graphfuzz_extra)
         add_custom_command(TARGET ${fuzzer_name}_run POST_BUILD
             COMMAND ${GFUZZ_EXECUTABLE} min ./${fuzzer_name} ./crash-*
-            COMMAND ./${fuzzer_name}_writer ./crash-*.min | tee ./crash-code.cc
+            COMMAND ./${fuzzer_name}_writer ./crash-*.min | tee ./fuzzing_reproduce.cc
             DEPENDS ${fuzzer_name}_writer
             WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
             COMMENT "Minimizing crash and converting graph to code representation."
