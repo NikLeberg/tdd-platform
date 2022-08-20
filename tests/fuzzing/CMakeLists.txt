@@ -103,6 +103,7 @@ function(fuzzer_add_target fuzzer_name lib_name)
         # Add writer executable.
         add_executable(${fuzzer_name}_writer ${CMAKE_CURRENT_BINARY_DIR}/fuzz_write.cpp)
         target_link_libraries(${fuzzer_name}_writer PRIVATE fuzzing_graphfuzz ${lib_double})
+        add_dependencies(${fuzzer_name} ${fuzzer_name}_writer)
         # Run writer after fuzzing, for this enable additional custom command.
         set(graphfuzz_extra 1)
     else()
@@ -139,7 +140,6 @@ function(fuzzer_add_target fuzzer_name lib_name)
             WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
             COMMENT "Minimizing crash and converting graph to code representation."
         )
-        add_dependencies(${fuzzer_name}_run ${fuzzer_name}_writer)
     endif()
     # Target to merge fuzzer corpus.
     add_custom_target(${fuzzer_name}_merge
