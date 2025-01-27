@@ -31,7 +31,7 @@ jobs:
         run: make fuzzing_${{matrix.target}}
 
       - name: 🡇 Download Corpus
-        uses: dawidd6/action-download-artifact@v6
+        uses: dawidd6/action-download-artifact@v8
         with:
           workflow: extended_tests.yml
           workflow_conclusion: completed
