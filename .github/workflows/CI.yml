@@ -51,7 +51,7 @@ jobs:
 
     - name: 🎯 Upload Results
       if: matrix.platform == 'linux'
-      uses: mikepenz/action-junit-report@v6.0.0
+      uses: mikepenz/action-junit-report@v6.1.0
       with:
         report_paths: build/${{matrix.platform}}/tests/unit/**/*.xml
 
